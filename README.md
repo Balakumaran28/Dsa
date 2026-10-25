@@ -8,8 +8,8 @@ A personal repository dedicated to tracking LeetCode problem solutions, intuitio
 
 | Metric | Count |
 | :--- | :--- |
-| **Total Problems Solved** | 1 |
-| **Java Solutions** | 1 |
+| **Total Problems Solved** | 3 |
+| **Java Solutions** | 3 |
 
 ---
 
@@ -20,6 +20,13 @@ A personal repository dedicated to tracking LeetCode problem solutions, intuitio
 | # | Problem Title | LeetCode Link | Topic | Language | Notes | Status |
 | :-: | :--- | :--- | :--- | :-: | :-: | :-: |
 | 1319 | Number of Operations to Make Network Connected | [LeetCode #1319](https://leetcode.com/problems/number-of-operations-to-make-network-connected/) | Graphs, Disjoint Set Union (Union-Find) | Java | [Notes](graphs/1319-number-of-operations-to-make-network-connected.md) | Accepted |
+| 2492 | Minimum Score of a Path Between Two Cities | [LeetCode #2492](https://leetcode.com/problems/minimum-score-of-a-path-between-two-cities/) | Graphs, Disjoint Set Union (Union-Find) | Java | [Notes](graphs/2492-minimum-score-of-a-path-between-two-cities.md) | Accepted |
+
+### Bit Manipulation
+
+| # | Problem Title | LeetCode Link | Topic | Language | Notes | Status |
+| :-: | :--- | :--- | :--- | :-: | :-: | :-: |
+| Contest | Binary Digit Score | Today's Contest Problem | Bit Manipulation, Counting Set Bits | Java | [Notes](bit-manipulation/binary-digit-score.md) | Accepted |
 
 ---
 
@@ -28,8 +35,11 @@ A personal repository dedicated to tracking LeetCode problem solutions, intuitio
 ```text
 .
 ├── README.md
+├── bit-manipulation/
+│   └── binary-digit-score.md
 └── graphs/
-    └── 1319-number-of-operations-to-make-network-connected.md
+    ├── 1319-number-of-operations-to-make-network-connected.md
+    └── 2492-minimum-score-of-a-path-between-two-cities.md
 ```
 
 ---
