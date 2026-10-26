@@ -37,9 +37,11 @@ A personal repository dedicated to tracking LeetCode problem solutions, intuitio
 ├── README.md
 ├── bit-manipulation/
 │   └── binary-digit-score.md
-└── graphs/
-    ├── 1319-number-of-operations-to-make-network-connected.md
-    └── 2492-minimum-score-of-a-path-between-two-cities.md
+├── graphs/
+│   ├── 1319-number-of-operations-to-make-network-connected.md
+│   └── 2492-minimum-score-of-a-path-between-two-cities.md
+└── revision/
+    └── graphs.md
 ```
 
 ---
