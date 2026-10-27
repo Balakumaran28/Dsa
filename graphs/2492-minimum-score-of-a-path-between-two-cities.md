@@ -118,4 +118,4 @@ class UnionFind {
 - The minimum score is the minimum edge weight in the component containing city 1.
 - Because paths can revisit cities and roads, we do not need to find a simple path or use Dijkstra's algorithm.
 - Union-Find is useful for connectivity questions, while the edge weights can be processed separately.
-- **Pattern to Remember:** When a graph problem asks for the minimum edge weight in a connected component, first identify the relevant component, then scan its edges to find the minimum weight.
+- **Pattern to Remember:** When a graph problem asks for the minimum edge weight in a connected component, first identify the relevant component, then scan its edges to find the minimum weight
