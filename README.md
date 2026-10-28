@@ -8,8 +8,8 @@ A personal repository dedicated to tracking LeetCode problem solutions, intuitio
 
 | Metric | Count |
 | :--- | :--- |
-| **Total Problems Solved** | 3 |
-| **Java Solutions** | 3 |
+| **Total Problems Solved** | 4 |
+| **Java Solutions** | 4 |
 
 ---
 
@@ -18,15 +18,21 @@ A personal repository dedicated to tracking LeetCode problem solutions, intuitio
 ### Graphs
 
 | # | Problem Title | LeetCode Link | Topic | Language | Notes | Status |
-| :-: | :--- | :--- | :--- | :-: | :-: | :-: |
+| :-: | :--- | :--- | :--- | :--- | :-: | :-: | :-: |
 | 1319 | Number of Operations to Make Network Connected | [LeetCode #1319](https://leetcode.com/problems/number-of-operations-to-make-network-connected/) | Graphs, Disjoint Set Union (Union-Find) | Java | [Notes](graphs/1319-number-of-operations-to-make-network-connected.md) | Accepted |
 | 2492 | Minimum Score of a Path Between Two Cities | [LeetCode #2492](https://leetcode.com/problems/minimum-score-of-a-path-between-two-cities/) | Graphs, Disjoint Set Union (Union-Find) | Java | [Notes](graphs/2492-minimum-score-of-a-path-between-two-cities.md) | Accepted |
 
 ### Bit Manipulation
 
 | # | Problem Title | LeetCode Link | Topic | Language | Notes | Status |
-| :-: | :--- | :--- | :--- | :-: | :-: | :-: |
+| :-: | :--- | :--- | :--- | :--- | :-: | :-: | :-: |
 | Contest | Binary Digit Score | Today's Contest Problem | Bit Manipulation, Counting Set Bits | Java | [Notes](bit-manipulation/binary-digit-score.md) | Accepted |
+
+### Backtracking / Recursion
+
+| # | Problem Title | LeetCode Link | Topic | Language | Notes | Status |
+| :-: | :--- | :--- | :--- | :--- | :-: | :-: | :-: |
+| 17 | Letter Combinations of a Phone Number | [LeetCode #17](https://leetcode.com/problems/letter-combinations-of-a-phone-number/description/) | Backtracking, Recursion, String | Java | [Notes](revision/17-letter-combinations-of-a-phone-number.md) | Accepted |
 
 ---
 
@@ -41,6 +47,7 @@ A personal repository dedicated to tracking LeetCode problem solutions, intuitio
 │   ├── 1319-number-of-operations-to-make-network-connected.md
 │   └── 2492-minimum-score-of-a-path-between-two-cities.md
 └── revision/
+    ├── 17-letter-combinations-of-a-phone-number.md
     └── graphs.md
 ```
 
