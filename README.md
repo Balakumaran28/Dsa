@@ -8,8 +8,8 @@ A personal repository dedicated to tracking LeetCode problem solutions, intuitio
 
 | Metric | Count |
 | :--- | :--- |
-| **Total Problems Solved** | 4 |
-| **Java Solutions** | 4 |
+| **Total Problems Solved** | 5 |
+| **Java Solutions** | 5 |
 
 ---
 
@@ -34,6 +34,12 @@ A personal repository dedicated to tracking LeetCode problem solutions, intuitio
 | :-: | :--- | :--- | :--- | :--- | :-: | :-: | :-: |
 | 17 | Letter Combinations of a Phone Number | [LeetCode #17](https://leetcode.com/problems/letter-combinations-of-a-phone-number/description/) | Backtracking, Recursion, String | Java | [Notes](revision/17-letter-combinations-of-a-phone-number.md) | Accepted |
 
+### Linked List
+
+| # | Problem Title | LeetCode Link | Topic | Language | Notes | Status |
+| :-: | :--- | :--- | :--- | :--- | :-: | :-: | :-: |
+| 24 | Swap Nodes in Pairs | [LeetCode #24](https://leetcode.com/problems/swap-nodes-in-pairs/description/) | Linked List, Two Pointers, Recursion | Java | [Notes](revision/24-swap-nodes-in-pairs.md) | Accepted |
+
 ---
 
 ## Directory Structure
@@ -48,6 +54,7 @@ A personal repository dedicated to tracking LeetCode problem solutions, intuitio
 │   └── 2492-minimum-score-of-a-path-between-two-cities.md
 └── revision/
     ├── 17-letter-combinations-of-a-phone-number.md
+    ├── 24-swap-nodes-in-pairs.md
     └── graphs.md
 ```
 
