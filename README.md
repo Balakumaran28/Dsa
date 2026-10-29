@@ -8,8 +8,8 @@ A personal repository dedicated to tracking LeetCode problem solutions, intuitio
 
 | Metric | Count |
 | :--- | :--- |
-| **Total Problems Solved** | 5 |
-| **Java Solutions** | 5 |
+| **Total Problems Solved** | 6 |
+| **Java Solutions** | 6 |
 
 ---
 
@@ -40,6 +40,12 @@ A personal repository dedicated to tracking LeetCode problem solutions, intuitio
 | :-: | :--- | :--- | :--- | :--- | :-: | :-: | :-: |
 | 24 | Swap Nodes in Pairs | [LeetCode #24](https://leetcode.com/problems/swap-nodes-in-pairs/description/) | Linked List, Two Pointers, Recursion | Java | [Notes](revision/24-swap-nodes-in-pairs.md) | Accepted |
 
+### String / Two Pointers
+
+| # | Problem Title | LeetCode Link | Topic | Language | Notes | Status |
+| :-: | :--- | :--- | :--- | :--- | :-: | :-: | :-: |
+| 28 | Find the Index of the First Occurrence in a String | [LeetCode #28](https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/description/) | String, Two Pointers, String Matching | Java | [Notes](revision/28-find-the-index-of-the-first-occurrence-in-a-string.md) | Accepted |
+
 ---
 
 ## Directory Structure
@@ -55,6 +61,7 @@ A personal repository dedicated to tracking LeetCode problem solutions, intuitio
 └── revision/
     ├── 17-letter-combinations-of-a-phone-number.md
     ├── 24-swap-nodes-in-pairs.md
+    ├── 28-find-the-index-of-the-first-occurrence-in-a-string.md
     └── graphs.md
 ```
 
