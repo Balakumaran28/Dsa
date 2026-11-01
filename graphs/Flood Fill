@@ -1,0 +1,69 @@
+You are given an image represented by an m x n grid of integers image, where image[i][j] represents the pixel value of the image. You are also given three integers sr, sc, and color. Your task is to perform a flood fill on the image starting from the pixel image[sr][sc].
+
+To perform a flood fill:
+
+Begin with the starting pixel and change its color to color.
+Perform the same process for each pixel that is directly adjacent (pixels that share a side with the original pixel, either horizontally or vertically) and shares the same color as the starting pixel.
+Keep repeating this process by checking neighboring pixels of the updated pixels and modifying their color if it matches the original color of the starting pixel.
+The process stops when there are no more adjacent pixels of the original color to update.
+Return the modified image after performing the flood fill.
+
+ 
+
+class Solution {
+    public int[][] floodFill(int[][] image, int sr, int sc, int color) {
+
+        int ccolor = image[sr][sc];
+
+        if (ccolor == color)
+            return image;
+
+        image[sr][sc] = color;
+
+        if (sr - 1 >= 0 && image[sr - 1][sc] == ccolor) {
+            image[sr - 1][sc] = color;
+            dfs(image, sr - 1, sc, ccolor, color);
+        }
+
+        if (sr + 1 <= image.length - 1 && image[sr + 1][sc] == ccolor) {
+            image[sr + 1][sc] = color;
+            dfs(image, sr + 1, sc, ccolor, color);
+        }
+
+        if (sc - 1 >= 0 && image[sr][sc - 1] == ccolor) {
+            image[sr][sc - 1] = color;
+            dfs(image, sr, sc - 1, ccolor, color);
+        }
+
+        if (sc + 1 <= image[0].length - 1 && image[sr][sc + 1] == ccolor) {
+            image[sr][sc + 1] = color;
+            dfs(image, sr, sc + 1, ccolor, color);
+        }
+
+        return image;
+    }
+
+    public static void dfs(int[][] image, int sr, int sc,
+                           int ccolor, int color) {
+
+        if (sr - 1 >= 0 && image[sr - 1][sc] == ccolor) {
+            image[sr - 1][sc] = color;
+            dfs(image, sr - 1, sc, ccolor, color);
+        }
+
+        if (sr + 1 <= image.length - 1 && image[sr + 1][sc] == ccolor) {
+            image[sr + 1][sc] = color;
+            dfs(image, sr + 1, sc, ccolor, color);
+        }
+
+        if (sc - 1 >= 0 && image[sr][sc - 1] == ccolor) {
+            image[sr][sc - 1] = color;
+            dfs(image, sr, sc - 1, ccolor, color);
+        }
+
+        if (sc + 1 <= image[0].length - 1 && image[sr][sc + 1] == ccolor) {
+            image[sr][sc + 1] = color;
+            dfs(image, sr, sc + 1, ccolor, color);
+        }
+    }
+}
