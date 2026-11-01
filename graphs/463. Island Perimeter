@@ -1,0 +1,107 @@
+# 463. Island Perimeter
+
+- **LeetCode:** https://leetcode.com/problems/island-perimeter/
+- **Topic:** Arrays, Matrix
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+Every land cell has four sides. The sides that touch water or the boundary of the grid contribute to the island's perimeter, while the sides shared with other land cells do not contribute.
+
+Therefore, for each land cell, I can initialize its perimeter contribution to `4` and subtract `1` for every adjacent land cell in the four directions: up, down, left, and right.
+
+I can then add the remaining sides to the total perimeter.
+
+## 2. My Approach
+
+1. Initialize `ans = 0` to store the total perimeter.
+2. Iterate through every cell in the grid using nested loops.
+3. If the current cell is water (`0`), skip it.
+4. If the current cell is land (`1`):
+   - Initialize `side = 4`.
+   - Check the upper neighbor. If it exists and contains land, decrement `side`.
+   - Check the lower neighbor. If it exists and contains land, decrement `side`.
+   - Check the left neighbor. If it exists and contains land, decrement `side`.
+   - Check the right neighbor. If it exists and contains land, decrement `side`.
+5. Add the remaining sides to `ans`.
+6. Return `ans` after processing the entire grid.
+
+## 3. Where I Got Stuck / My Mistake
+
+Initially, I calculated the perimeter contribution for every cell without checking whether it was land or water.
+
+This was incorrect because water cells should not contribute to the island's perimeter.
+
+**Correction:** Skip a cell when `grid[i][j] == 0` using `continue`.
+
+## 4. What Clicked
+
+- Every land cell initially contributes four sides.
+- Adjacent land cells share edges, and shared edges are not part of the perimeter.
+- Each adjacent land cell reduces the current cell's contribution by one.
+- Boundary checks prevent accessing invalid grid indices.
+- DFS and a `visited` array are unnecessary because the perimeter can be calculated directly by examining every cell.
+
+## 5. Final Submitted Code
+
+```java
+class Solution {
+    public int islandPerimeter(int[][] grid) {
+        int ans = 0;
+
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 0) {
+                    continue;
+                }
+
+                int side = 4;
+
+                if (i != 0 && grid[i - 1][j] == 1) {
+                    side--;
+                }
+
+                if (i != grid.length - 1 && grid[i + 1][j] == 1) {
+                    side--;
+                }
+
+                if (j != 0 && grid[i][j - 1] == 1) {
+                    side--;
+                }
+
+                if (j != grid[0].length - 1 && grid[i][j + 1] == 1) {
+                    side--;
+                }
+
+                ans += side;
+            }
+        }
+
+        return ans;
+    }
+}
+```
+
+## 6. Complexity Analysis
+
+Let:
+- `m` = number of rows
+- `n` = number of columns
+
+**Time Complexity:** `O(m × n)`
+
+Every cell is visited once, and each land cell requires at most four neighbor checks.
+
+**Auxiliary Space Complexity:** `O(1)`
+
+Only a constant number of variables are used. No additional data structures are required.
+
+## 7. Revision Notes
+
+- Start with four sides for each land cell.
+- Subtract one for every adjacent land cell.
+- Skip water cells.
+- Check boundaries before accessing neighboring cells.
+- Direct counting is sufficient; graph traversal is not necessary for this problem.
+- Remember the general principle: **Perimeter = Total land-cell sides − Shared sides counted twice.**
