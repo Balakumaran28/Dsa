@@ -1,0 +1,136 @@
+1162. As Far from Land as Possible
+
+- LeetCode: https://leetcode.com/problems/as-far-from-land-as-possible/
+- Topic: Graphs, BFS, Multi-Source BFS, Matrix
+- Language: Java
+- Status: Solved ✅
+
+1. My Intuition
+
+After solving 01 Matrix (LeetCode 542), I recognized that this problem follows the same Multi-Source BFS pattern.
+
+Instead of finding the nearest zero for every cell, here I need to find the water cell whose distance to the nearest land cell is maximum.
+
+Therefore:
+
+- All land cells ("1") are the sources.
+- Water cells ("0") are the cells whose distances need to be calculated.
+- Starting BFS from all land cells simultaneously allows me to calculate the shortest distance of every water cell to its nearest land cell.
+
+After calculating the distances, I can maintain a variable "max" to store the maximum distance.
+
+2. My Approach
+
+1. Create a distance matrix "dist" of the same dimensions as the input grid.
+2. Initialize a queue and "max = 0".
+3. Iterate through the entire grid:
+   - If the cell contains land ("1"), assign distance "0" and insert its coordinates into the queue.
+   - Otherwise, initialize its distance as "-1", representing an unvisited water cell.
+4. Define four direction arrays to explore up, down, left, and right.
+5. Perform Multi-Source BFS:
+   - Remove the current cell from the queue.
+   - Explore its four neighbours.
+   - Check whether the neighbour is within the grid boundaries and unvisited.
+   - Calculate its distance using "dist[r][c] + 1".
+   - Update "max" if the newly calculated distance is greater.
+   - Insert the neighbour into the queue.
+6. Continue until the queue becomes empty.
+7. If "max == 0", return "-1", because either all cells are land or all cells are water.
+8. Otherwise, return "max".
+
+3. Where I Got Stuck / My Mistake
+
+There was no major implementation mistake.
+
+The main challenge was identifying that this problem could be solved using the same Multi-Source BFS approach as 01 Matrix.
+
+Instead of performing BFS separately from every water cell, I used all land cells as simultaneous starting points.
+
+4. What Clicked
+
+- The same Multi-Source BFS template can solve different problems by changing the source condition and required output.
+- In 01 Matrix, zero cells are the sources.
+- In this problem, land cells are the sources.
+- BFS calculates the shortest distance from each cell to its nearest source.
+- Since the problem asks for the maximum of these shortest distances, I maintain a "max" variable.
+- If the grid contains only land or only water, the answer is "-1".
+
+Key concept: First calculate the shortest distance from every water cell to its nearest land cell using Multi-Source BFS, then find the maximum among those distances.
+
+5. Final Submitted Code
+
+class Solution {
+    public int maxDistance(int[][] grid) {
+
+        int m = grid.length;
+        int n = grid[0].length;
+
+        int max = 0;
+
+        int[][] dist = new int[m][n];
+
+        Queue<int[]> q = new LinkedList<>();
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+
+                if (grid[i][j] == 1) {
+                    dist[i][j] = 0;
+                    q.offer(new int[]{i, j});
+                } else {
+                    dist[i][j] = -1;
+                }
+            }
+        }
+
+        int[] dr = {-1, 1, 0, 0};
+        int[] dc = {0, 0, -1, 1};
+
+        while (!q.isEmpty()) {
+
+            int[] curr = q.poll();
+
+            int r = curr[0];
+            int c = curr[1];
+
+            for (int k = 0; k < 4; k++) {
+
+                int nr = r + dr[k];
+                int nc = c + dc[k];
+
+                if (nr >= 0 && nr < m &&
+                    nc >= 0 && nc < n &&
+                    dist[nr][nc] == -1) {
+
+                    dist[nr][nc] = dist[r][c] + 1;
+
+                    if (dist[nr][nc] > max) {
+                        max = dist[nr][nc];
+                    }
+
+                    q.offer(new int[]{nr, nc});
+                }
+            }
+        }
+
+        return max == 0 ? -1 : max;
+    }
+}
+
+6. Complexity Analysis
+
+Let "n" be the dimension of the square grid.
+
+- Time Complexity: "O(n²)" — Every cell is inserted into and processed from the queue at most once. Each cell checks four neighbours.
+- Space Complexity: "O(n²)" — Distance matrix and queue.
+
+7. Revision Notes
+
+- Identify all land cells as sources.
+- Insert all sources into the queue with distance "0".
+- Use Multi-Source BFS to calculate the nearest land distance for every water cell.
+- Maintain a maximum distance while exploring.
+- Return "-1" if there is no valid land-water combination.
+- Recognize that the same BFS algorithm can solve different problems by changing the source condition and final objective.
+
+Pattern learned: Multi-Source BFS — Find the shortest distance to the nearest source, then aggregate the distances according to the problem requirement.
