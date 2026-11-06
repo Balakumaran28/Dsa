@@ -1,0 +1,122 @@
+542. 01 Matrix
+
+- LeetCode: https://leetcode.com/problems/01-matrix/
+- Topic: Graphs, BFS, Multi-Source BFS, Matrix
+- Language: Java
+- Status: Solved ✅
+
+1. My Intuition
+
+Initially, I thought of iterating through every cell and performing BFS from each cell containing "1" until I encountered a "0".
+
+However, this would result in repeated BFS traversals.
+
+Instead, I realized that I could use Multi-Source BFS by inserting all cells containing "0" into the queue simultaneously.
+
+Since all zero cells have distance "0", BFS can expand from all of them level by level and calculate the shortest distance of every cell to its nearest zero.
+
+2. My Approach
+
+1. Create a distance matrix "dist" of the same dimensions as the input matrix.
+2. Initialize the queue.
+3. Iterate through the entire matrix:
+   - If the cell contains "0", assign distance "0" and insert its coordinates into the queue.
+   - Otherwise, initialize its distance as "-1", representing an unvisited cell.
+4. Define four direction arrays to explore up, down, left, and right.
+5. Perform Multi-Source BFS:
+   - Remove the current cell from the queue.
+   - Explore its four neighbours.
+   - Check whether the neighbour is within the matrix boundaries and unvisited.
+   - Assign its distance as "dist[r][c] + 1".
+   - Insert the neighbour into the queue.
+6. Continue until the queue becomes empty.
+7. Return the distance matrix.
+
+3. Where I Got Stuck / My Mistake
+
+My initial approach was to start a separate BFS from every cell containing "1".
+
+This would repeatedly explore the same cells and increase the time complexity.
+
+What I corrected: Instead of starting BFS separately for every cell, I inserted all zero cells into the queue initially and performed a single Multi-Source BFS.
+
+4. What Clicked
+
+- When multiple starting points exist, I can consider Multi-Source BFS.
+- All source cells are inserted into the queue initially with distance "0".
+- BFS explores cells level by level.
+- The first time an unvisited cell is reached, its shortest distance is determined.
+- Using "-1" in the distance matrix helps identify unvisited cells without requiring a separate visited array.
+- Direction arrays simplify neighbour exploration.
+
+Key concept: Multi-Source BFS calculates the shortest distance from every cell to its nearest source in a single traversal.
+
+5. Final Submitted Code
+
+class Solution {
+    public int[][] updateMatrix(int[][] mat) {
+
+        int m = mat.length;
+        int n = mat[0].length;
+
+        int[][] dist = new int[m][n];
+
+        Queue<int[]> q = new LinkedList<>();
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+
+                if (mat[i][j] == 0) {
+                    dist[i][j] = 0;
+                    q.offer(new int[]{i, j});
+                } else {
+                    dist[i][j] = -1;
+                }
+            }
+        }
+
+        int[] dr = {-1, 1, 0, 0};
+        int[] dc = {0, 0, -1, 1};
+
+        while (!q.isEmpty()) {
+
+            int[] curr = q.poll();
+
+            int r = curr[0];
+            int c = curr[1];
+
+            for (int k = 0; k < 4; k++) {
+
+                int nr = r + dr[k];
+                int nc = c + dc[k];
+
+                if (nr >= 0 && nr < m &&
+                    nc >= 0 && nc < n &&
+                    dist[nr][nc] == -1) {
+
+                    dist[nr][nc] = dist[r][c] + 1;
+
+                    q.offer(new int[]{nr, nc});
+                }
+            }
+        }
+
+        return dist;
+    }
+}
+
+6. Complexity Analysis
+
+Let "m" be the number of rows and "n" be the number of columns.
+
+- Time Complexity: "O(m × n)" — Every cell is inserted into and processed from the queue at most once. Each cell checks four neighbours.
+- Space Complexity: "O(m × n)" — Distance matrix and queue.
+
+7. Revision Notes
+
+- Identify all source cells first.
+- Insert every source into the queue with distance "0".
+- Use BFS to expand level by level.
+- Use a distance matrix to track visited cells and shortest distances.
+- Apply Multi-Source BFS when finding the nearest source among multiple starting points.
+- Remember: First visit in unweighted BFS guarantees the shortest distance.
