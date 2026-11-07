@@ -1,0 +1,97 @@
+# 1765. Map of Highest Peak
+
+- **LeetCode:** https://leetcode.com/problems/map-of-highest-peak/
+- **Topic:** Graph, Matrix, Multi-Source BFS
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+We need to assign heights to every cell such that:
+- Water cells have height 0.
+- Adjacent cells have a height difference of at most 1.
+- The maximum possible height is achieved.
+
+I recognized that this problem could be solved using Multi-Source BFS.
+
+## 2. My Approach
+
+1. Add all water cells to the queue and assign height 0.
+2. Initialize all land cells with -1 to indicate unvisited cells.
+3. Start BFS from all water cells simultaneously.
+4. Explore all four directions.
+5. If a neighboring cell is unvisited, assign its height as the current cell's height + 1.
+6. Add the newly visited cell to the queue.
+7. Return the height matrix.
+
+## 3. Where I Got Stuck / My Mistake
+
+No major difficulty with identifying the algorithm.
+
+The important part was understanding why assigning the shortest distance from water to each cell produces the maximum possible peak height.
+
+## 4. What Clicked
+
+The height of each cell is equal to its shortest distance from the nearest water cell.
+
+Multi-Source BFS guarantees these shortest distances in an unweighted grid.
+
+## 5. Final Submitted Code
+
+class Solution {
+    public int[][] highestPeak(int[][] isWater) {
+        int m = isWater.length;
+        int n = isWater[0].length;
+
+        int[][] height = new int[m][n];
+        Queue<int[]> q = new LinkedList<>();
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (isWater[i][j] == 1) {
+                    height[i][j] = 0;
+                    q.offer(new int[]{i, j});
+                } else {
+                    height[i][j] = -1;
+                }
+            }
+        }
+
+        int[] dr = {-1, 1, 0, 0};
+        int[] dc = {0, 0, -1, 1};
+
+        while (!q.isEmpty()) {
+            int[] curr = q.poll();
+            int r = curr[0];
+            int c = curr[1];
+
+            for (int k = 0; k < 4; k++) {
+                int nr = r + dr[k];
+                int nc = c + dc[k];
+
+                if (nr >= 0 && nr < m &&
+                    nc >= 0 && nc < n &&
+                    height[nr][nc] == -1) {
+
+                    height[nr][nc] = height[r][c] + 1;
+                    q.offer(new int[]{nr, nc});
+                }
+            }
+        }
+
+        return height;
+    }
+}
+
+## 6. Complexity Analysis
+
+- Time Complexity: O(m * n)
+- Auxiliary Space Complexity: O(m * n)
+
+## 7. Revision Notes
+
+- Identify all water cells as sources.
+- Initialize all sources before starting BFS.
+- Use -1 to identify unvisited cells.
+- Height = shortest distance from the nearest water cell.
+- Every cell is visited at most once.
