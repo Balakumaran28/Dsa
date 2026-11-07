@@ -1,0 +1,51 @@
+# 2812. Find the Safest Path in a Grid
+
+- **LeetCode:** https://leetcode.com/problems/find-the-safest-path-in-a-grid/
+- **Topic:** Graph, Matrix, Multi-Source BFS, Path Optimization
+- **Language:** Java
+- **Status:** Understanding in progress
+
+## 1. My Intuition
+
+The problem gives a grid containing thieves and asks us to travel from the top-left cell to the bottom-right cell.
+
+We need to find a path that keeps us as far away from thieves as possible.
+
+## 2. My Approach
+
+The problem can be divided into two parts:
+
+1. Calculate the safeness factor of every cell by finding its Manhattan distance from the nearest thief.
+2. Find a path from the source to the destination that maximizes the minimum safeness factor along that path.
+
+## 3. Where I Got Stuck / My Mistake
+
+I initially found the problem difficult to understand, particularly what it meant to maximize the safeness factor of a path.
+
+## 4. What Clicked
+
+The safeness factor of a path is the minimum safeness factor among all cells in that path.
+
+For example, if different paths have minimum safeness factors:
+
+2, 4, 1, 3, 5
+
+We must select the path with safeness factor 5.
+
+In other words, maximize the minimum distance from a thief encountered along the path.
+
+## 5. Final Submitted Code
+
+Not yet implemented.
+
+## 6. Complexity Analysis
+
+Not yet determined.
+
+## 7. Revision Notes
+
+- Safeness factor of a cell = Manhattan distance to its nearest thief.
+- Manhattan distance = |r1 - r2| + |c1 - c2|.
+- Path safeness = minimum cell safeness along that path.
+- Objective = maximize the path safeness.
+- Separate the distance-calculation problem from the path-selection problem.
