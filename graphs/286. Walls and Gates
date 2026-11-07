@@ -1,0 +1,99 @@
+# 286. Walls and Gates
+
+- **LeetCode:** https://leetcode.com/problems/walls-and-gates/
+- **Topic:** Graph, Matrix, Multi-Source BFS
+- **Language:** Java
+- **Status:** Approach understood
+
+## 1. My Intuition
+
+This problem follows the same Multi-Source BFS pattern.
+
+We need to find the distance of every empty room from its nearest gate.
+
+Instead of creating a new matrix, we can modify the existing matrix itself.
+
+## 2. My Approach
+
+1. Traverse the matrix and add all gates (0) to the queue.
+2. Start BFS from all gates simultaneously.
+3. Explore all four directions.
+4. If a neighboring cell contains Integer.MAX_VALUE:
+   - Update its value to the current cell's value + 1.
+   - Add it to the queue.
+5. Leave walls (-1) undisturbed.
+6. Ignore already visited cells.
+7. If an empty room cannot be reached from any gate, it remains INF.
+
+## 3. Where I Got Stuck / My Mistake
+
+No major difficulty.
+
+The key observation was that an additional distance matrix is unnecessary because the original matrix can store the distances.
+
+## 4. What Clicked
+
+The same Multi-Source BFS algorithm can be applied without creating a separate distance matrix.
+
+The condition:
+
+rooms[nr][nc] == Integer.MAX_VALUE
+
+ensures that only unvisited empty rooms are processed.
+
+Unreachable rooms automatically retain their original value.
+
+## 5. Final Submitted Code
+
+class Solution {
+    public void wallsAndGates(int[][] rooms) {
+        int m = rooms.length;
+        int n = rooms[0].length;
+
+        Queue<int[]> q = new LinkedList<>();
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (rooms[i][j] == 0) {
+                    q.offer(new int[]{i, j});
+                }
+            }
+        }
+
+        int[] dr = {-1, 1, 0, 0};
+        int[] dc = {0, 0, -1, 1};
+
+        while (!q.isEmpty()) {
+            int[] curr = q.poll();
+            int r = curr[0];
+            int c = curr[1];
+
+            for (int k = 0; k < 4; k++) {
+                int nr = r + dr[k];
+                int nc = c + dc[k];
+
+                if (nr >= 0 && nr < m &&
+                    nc >= 0 && nc < n &&
+                    rooms[nr][nc] == Integer.MAX_VALUE) {
+
+                    rooms[nr][nc] = rooms[r][c] + 1;
+                    q.offer(new int[]{nr, nc});
+                }
+            }
+        }
+    }
+}
+
+## 6. Complexity Analysis
+
+- Time Complexity: O(m * n)
+- Auxiliary Space Complexity: O(m * n)
+
+## 7. Revision Notes
+
+- All gates are initial sources.
+- Use the existing matrix to store distances.
+- Integer.MAX_VALUE represents an unvisited empty room.
+- Walls are never visited.
+- Unreachable rooms remain unchanged.
+- BFS finds the nearest gate.
