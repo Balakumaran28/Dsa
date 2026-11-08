@@ -1,0 +1,111 @@
+# 1020. Number of Enclaves
+
+- **LeetCode:** https://leetcode.com/problems/number-of-enclaves/
+- **Topic:** Graph, Matrix, DFS
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+Initially, I thought of counting all the land cells in the grid.
+
+Instead of finding the land cells that cannot escape, I realized it would be easier to find all the land cells connected to the boundary.
+
+Any land cell connected to a boundary land cell can eventually walk outside the grid.
+
+Therefore:
+
+Answer = Total Land Cells - Boundary Connected Land Cells.
+
+## 2. My Approach
+
+1. Count the total number of land cells (1) in the grid.
+2. Traverse all four boundaries of the grid.
+3. Whenever a boundary cell contains 1, start DFS from that cell.
+4. During DFS:
+   - Check whether the cell is within the grid boundaries.
+   - If the cell is not land or is already visited, return.
+   - Mark the visited land cell as -1.
+   - Decrement the total land count.
+   - Explore all four directions.
+5. Return the remaining land count.
+
+I used -1 as a visited marker in the original matrix, avoiding an additional visited matrix.
+
+## 3. Where I Got Stuck / My Mistake
+
+Initially, I thought of using a separate Boolean visited matrix.
+
+Later, I realized that modifying the original grid using -1 would eliminate the need for an additional matrix.
+
+I also considered returning the number of connected land cells from DFS, but decrementing the count directly during DFS made the implementation simpler.
+
+## 4. What Clicked
+
+Instead of finding all land cells that cannot escape, find all land cells that CAN escape.
+
+Every land cell connected to a boundary land cell can eventually walk outside the grid.
+
+By marking these cells during DFS and decrementing the initial land count, the remaining count directly gives the answer.
+
+## 5. Final Submitted Code
+
+class Solution {
+    int m, n;
+    int count = 0;
+
+    public int numEnclaves(int[][] grid) {
+        m = grid.length;
+        n = grid[0].length;
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    count++;
+                }
+            }
+        }
+
+        for (int i = 0; i < m; i++) {
+            dfs(grid, i, 0);
+            dfs(grid, i, n - 1);
+        }
+
+        for (int j = 0; j < n; j++) {
+            dfs(grid, 0, j);
+            dfs(grid, m - 1, j);
+        }
+
+        return count;
+    }
+
+    void dfs(int[][] grid, int r, int c) {
+        if (r < 0 || r >= m || c < 0 || c >= n ||
+            grid[r][c] != 1) {
+            return;
+        }
+
+        grid[r][c] = -1;
+        count--;
+
+        dfs(grid, r - 1, c);
+        dfs(grid, r + 1, c);
+        dfs(grid, r, c - 1);
+        dfs(grid, r, c + 1);
+    }
+}
+
+## 6. Complexity Analysis
+
+- Time Complexity: O(m * n)
+- Auxiliary Space Complexity: O(m * n) in the worst case due to the recursive DFS stack.
+
+## 7. Revision Notes
+
+- Start DFS only from boundary land cells.
+- Every land cell connected to the boundary can escape.
+- Use the original matrix to mark visited cells.
+- Mark visited land cells as -1.
+- Decrement the count whenever DFS visits a land cell.
+- Avoid processing the same cell multiple times.
+- Remaining land cells are the enclaves.
