@@ -1,0 +1,129 @@
+# 433. Minimum Genetic Mutation
+
+- **LeetCode:** https://leetcode.com/problems/minimum-genetic-mutation/
+- **Topic:** Graph, BFS, String, HashSet
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+Initially, I understood that this problem could be solved using BFS because we need the minimum number of mutations to reach the destination.
+
+However, I struggled with identifying which gene strings should be added to the queue.
+
+I realized that every valid gene string can be treated as a node, and two genes are connected if they differ by exactly one character.
+
+Instead of manually identifying the next gene, we can generate all possible one-character mutations and validate them against the bank.
+
+## 2. My Approach
+
+1. Convert the bank into a HashSet for efficient lookup.
+2. Check whether the destination gene exists in the bank. If not, return -1.
+3. Add the starting gene to the queue.
+4. Perform level-order BFS.
+5. For every gene removed from the queue:
+   - Traverse all 8 character positions.
+   - Try replacing each position with A, C, G, and T.
+   - Skip the character if it is already the same.
+   - Generate the new gene using StringBuilder.
+   - Check whether the generated gene exists in the bank.
+   - If it exists, add it to the queue and remove it from the HashSet to prevent revisiting.
+6. Maintain a counter to track the number of BFS levels.
+7. If the destination gene is reached, return the mutation count.
+8. If BFS finishes without reaching the destination, return -1.
+
+## 3. Where I Got Stuck / My Mistake
+
+Initially, I understood the BFS approach but struggled with generating the possible neighbouring gene strings.
+
+I was unsure how to change specific characters into their alternative characters without manually writing separate conditions.
+
+I considered using StringBuilder but was unsure how to implement the character replacement logic.
+
+## 4. What Clicked
+
+The important realization was that we can generate all possible mutations dynamically.
+
+For every character position, there are exactly three alternative characters.
+
+Since the gene length is 8, we can generate at most 8 * 3 = 24 possible mutations for each gene.
+
+We only add a generated gene to the queue if it exists in the bank and has not been visited.
+
+The HashSet helps with efficient validation and prevents revisiting genes.
+
+BFS level-order traversal guarantees that the first time we reach the destination, we have found the minimum number of mutations.
+
+## 5. Final Submitted Code
+
+class Solution {
+    public int minMutation(String startGene, String endGene, String[] bank) {
+        Set<String> bankSet = new HashSet<>(Arrays.asList(bank));
+
+        if (!bankSet.contains(endGene)) {
+            return -1;
+        }
+
+        Queue<String> q = new LinkedList<>();
+        char[] chars = {'A', 'C', 'G', 'T'};
+
+        q.offer(startGene);
+        bankSet.remove(startGene);
+
+        int count = 0;
+
+        while (!q.isEmpty()) {
+            int size = q.size();
+
+            for (int i = 0; i < size; i++) {
+                String gene = q.poll();
+
+                if (gene.equals(endGene)) {
+                    return count;
+                }
+
+                for (int j = 0; j < gene.length(); j++) {
+                    for (char ch : chars) {
+                        if (gene.charAt(j) == ch) {
+                            continue;
+                        }
+
+                        StringBuilder sb = new StringBuilder(gene);
+                        sb.setCharAt(j, ch);
+
+                        String newGene = sb.toString();
+
+                        if (bankSet.contains(newGene)) {
+                            q.offer(newGene);
+                            bankSet.remove(newGene);
+                        }
+                    }
+                }
+            }
+
+            count++;
+        }
+
+        return -1;
+    }
+}
+
+## 6. Complexity Analysis
+
+Let B be the number of genes in the bank and L be the gene length.
+
+- Time Complexity: O(B * L * 4 * L), considering StringBuilder creation and conversion.
+- Auxiliary Space Complexity: O(B * L) for the HashSet and BFS queue.
+
+## 7. Revision Notes
+
+- Treat each valid gene as a graph node.
+- Two genes are connected if they differ by exactly one character.
+- Use BFS to find the minimum mutations.
+- Generate neighbouring genes dynamically.
+- Use StringBuilder.setCharAt() to replace a character.
+- Try all four possible characters at every position.
+- Skip the original character.
+- Use HashSet for bank validation.
+- Remove genes from the unvisited set when adding them to the queue.
+- Process BFS level by level to count mutations.
