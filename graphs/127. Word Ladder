@@ -1,0 +1,111 @@
+# 
+
+- **LeetCode:** https://leetcode.com/problems/word-ladder/
+- **Topic:** Graphs, BFS, Shortest Path, String Manipulation
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+This problem is similar to Minimum Genetic Mutation (433).
+
+In Genetic Mutation, we generate possible mutations using four characters: A, C, G, T.
+
+Here, instead of four characters, we have all 26 lowercase English alphabets.
+
+We need to find the shortest transformation sequence from beginWord to endWord, where each transformation changes exactly one character and the resulting word must exist in the dictionary.
+
+## 2. My Approach
+
+1. Store all words from wordList in a HashSet for efficient lookup.
+2. If endWord is not present in the set, return 0.
+3. Start BFS from beginWord.
+4. For every word:
+   - Iterate through each character position.
+   - Try replacing that character with all 26 lowercase English letters.
+   - If the generated word exists in the set, add it to the queue and remove it from the set.
+5. Process BFS level by level.
+6. Return the word count when endWord is reached.
+
+## 3. Where I Got Stuck / My Mistake
+
+No major difficulty in the BFS logic.
+
+The main observation was recognizing that this problem follows the same approach as Minimum Genetic Mutation, with a larger character set.
+
+## 4. What Clicked
+
+The transformation of a word can be treated as generating its neighboring nodes.
+
+Two words are connected if they differ by exactly one character.
+
+BFS guarantees that the first time we reach endWord, we have found the shortest transformation sequence.
+
+## 5. Final Submitted Code
+
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        Set<String> set = new HashSet<>(wordList);
+
+        if (!set.contains(endWord)) {
+            return 0;
+        }
+
+        Queue<String> q = new LinkedList<>();
+        q.offer(beginWord);
+        set.remove(beginWord);
+
+        int count = 1;
+
+        while (!q.isEmpty()) {
+            int size = q.size();
+
+            for (int i = 0; i < size; i++) {
+                String word = q.poll();
+
+                if (word.equals(endWord)) {
+                    return count;
+                }
+
+                for (int j = 0; j < word.length(); j++) {
+                    for (char ch = 'a'; ch <= 'z'; ch++) {
+                        if (word.charAt(j) == ch) {
+                            continue;
+                        }
+
+                        StringBuilder sb = new StringBuilder(word);
+                        sb.setCharAt(j, ch);
+
+                        String newWord = sb.toString();
+
+                        if (set.contains(newWord)) {
+                            q.offer(newWord);
+                            set.remove(newWord);
+                        }
+                    }
+                }
+            }
+
+            count++;
+        }
+
+        return 0;
+    }
+}
+
+## 6. Complexity Analysis
+
+Let N be the number of words and L be the length of each word.
+
+- **Time Complexity:** O(26 × N × L²)
+- **Space Complexity:** O(N × L)
+
+Each word is processed at most once. For each word, we generate up to 26 × L possible transformations, and creating each string takes O(L).
+
+## 7. Revision Notes
+
+- Single-source BFS.
+- Generate neighbors by changing one character at a time.
+- Use HashSet for dictionary lookup.
+- Remove words from the set when adding them to the queue to avoid revisiting.
+- BFS level count represents the number of words in the transformation sequence.
