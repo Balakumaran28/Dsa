@@ -1,0 +1,122 @@
+# 1926. Nearest Exit from Entrance in Maze
+
+- **LeetCode:** https://leetcode.com/problems/nearest-exit-from-entrance-in-maze/
+- **Topic:** Graphs, BFS, Shortest Path, Grid Traversal
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+We can solve this problem using BFS starting from the entrance.
+
+We need to explore all four directions: up, down, left, and right.
+
+If we encounter an empty cell at the boundary of the maze, we have found an exit.
+
+Since BFS explores cells level by level, the first exit we encounter gives the shortest distance.
+
+The entrance itself should not be considered an exit.
+
+## 2. My Approach
+
+1. Get the number of rows and columns.
+2. Add the entrance coordinates to the queue.
+3. Mark the entrance as visited by changing it to '+'.
+4. Perform BFS level by level.
+5. For every cell removed from the queue:
+   - Explore all four directions.
+   - Skip cells that are outside the maze or contain '+'.
+   - If a valid neighboring cell is on the boundary, return the current level count.
+   - Otherwise, mark it visited and add it to the queue.
+6. If BFS finishes without finding an exit, return -1.
+
+## 3. Where I Got Stuck / My Mistake
+
+The main boundary condition needs careful attention.
+
+A cell is on the boundary if:
+
+r == 0 || r == m - 1 || c == 0 || c == n - 1
+
+Here:
+- r is compared with the number of rows (m).
+- c is compared with the number of columns (n).
+
+Also, the entrance must not be considered an exit, so we check neighboring cells rather than treating the initial entrance as an exit.
+
+## 4. What Clicked
+
+BFS is suitable because every movement has the same cost: one step.
+
+Processing the queue level by level allows us to identify the nearest exit without exploring unnecessary levels.
+
+Marking a cell as visited when adding it to the queue prevents repeated visits.
+
+## 5. Final Submitted Code
+
+class Solution {
+    public int nearestExit(char[][] maze, int[] entrance) {
+        int m = maze.length;
+        int n = maze[0].length;
+
+        Queue<int[]> q = new LinkedList<>();
+
+        q.offer(new int[]{entrance[0], entrance[1]});
+        maze[entrance[0]][entrance[1]] = '+';
+
+        int[] dr = {-1, 1, 0, 0};
+        int[] dc = {0, 0, -1, 1};
+
+        int count = 0;
+
+        while (!q.isEmpty()) {
+            int size = q.size();
+            count++;
+
+            for (int i = 0; i < size; i++) {
+                int[] curr = q.poll();
+
+                int r = curr[0];
+                int c = curr[1];
+
+                for (int k = 0; k < 4; k++) {
+                    int nr = r + dr[k];
+                    int nc = c + dc[k];
+
+                    if (nr < 0 || nr >= m || nc < 0 || nc >= n ||
+                        maze[nr][nc] == '+') {
+                        continue;
+                    }
+
+                    if (nr == 0 || nr == m - 1 || nc == 0 || nc == n - 1) {
+                        return count;
+                    }
+
+                    maze[nr][nc] = '+';
+                    q.offer(new int[]{nr, nc});
+                }
+            }
+        }
+
+        return -1;
+    }
+}
+
+## 6. Complexity Analysis
+
+Let m be the number of rows and n be the number of columns.
+
+- **Time Complexity:** O(m × n)
+- **Space Complexity:** O(m × n)
+
+Each cell is visited at most once, and the queue can contain up to O(m × n) cells.
+
+## 7. Revision Notes
+
+- Single-source BFS from the entrance.
+- Explore four directions.
+- Process BFS level by level.
+- Boundary condition: r == 0 || r == m - 1 || c == 0 || c == n - 1.
+- Entrance is not an exit.
+- Mark visited cells immediately when adding them to the queue.
+- Return the first exit's distanc
