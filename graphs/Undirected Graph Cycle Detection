@@ -1,0 +1,136 @@
+# Undirected Graph Cycle Detection
+
+- **Platform:** GeeksforGeeks
+- **Topic:** Graphs, Disjoint Set Union (DSU), Union-Find
+- **Language:** Java
+- **Status:** Practiced
+
+## 1. My Intuition
+
+Initially, I thought of solving this problem using DFS.
+
+My DFS intuition was:
+
+1. Maintain a visited array.
+2. Traverse every connected component.
+3. During DFS, ignore the parent node.
+4. If we encounter an already visited node that is not the parent, a cycle exists.
+
+I also recognized that this problem can be solved using Union-Find.
+
+## 2. My Approach
+
+1. Initialize a parent array where every vertex is its own parent.
+2. Initialize a size array with 1 for every vertex.
+3. Traverse the adjacency list.
+4. Process each undirected edge only once using `u < v`.
+5. Find the representatives of both vertices.
+6. If both vertices have the same representative, a cycle exists.
+7. Otherwise, merge their components using Union by Size.
+8. Use path compression in the find operation.
+
+## 3. Where I Got Stuck / My Mistake
+
+I initially remembered the cycle detection concept but had forgotten the overall Union-Find implementation.
+
+I needed to rebuild the following concepts:
+
+- Parent array initialization.
+- Find operation.
+- Path compression.
+- Union operation.
+- Union by Size.
+
+## 4. What Clicked
+
+The most important observation is:
+
+If two vertices already belong to the same component, adding an edge between them creates a cycle.
+
+Therefore:
+
+- If `find(u) == find(v)`, a cycle exists.
+- Otherwise, merge their components.
+
+Union by Size keeps the DSU tree relatively shallow, while path compression makes future find operations faster.
+
+## 5. Final Submitted Code
+
+class Solution {
+    int[] parent;
+    int[] size;
+
+    int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]);
+        }
+        return parent[x];
+    }
+
+    void union(int u, int v) {
+        int pu = find(u);
+        int pv = find(v);
+
+        if (pu == pv) {
+            return;
+        }
+
+        if (size[pu] < size[pv]) {
+            parent[pu] = pv;
+            size[pv] += size[pu];
+        } else {
+            parent[pv] = pu;
+            size[pu] += size[pv];
+        }
+    }
+
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+        parent = new int[V];
+        size = new int[V];
+
+        for (int i = 0; i < V; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+
+        for (int u = 0; u < V; u++) {
+            for (int v : adj.get(u)) {
+                if (u == v) {
+                    return true;
+                }
+
+                if (u < v) {
+                    int pu = find(u);
+                    int pv = find(v);
+
+                    if (pu == pv) {
+                        return true;
+                    }
+
+                    union(pu, pv);
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+## 6. Complexity Analysis
+
+Let V be the number of vertices and E be the number of edges.
+
+- **Time Complexity:** O(V + E × α(V))
+- **Space Complexity:** O(V)
+
+Here, α(V) is the inverse Ackermann function, which grows extremely slowly.
+
+## 7. Revision Notes
+
+- DSU is used to maintain connected components.
+- Every vertex initially belongs to its own component.
+- Find returns the representative of a component.
+- Path compression optimizes the find operation.
+- Union by Size attaches the smaller component to the larger one.
+- If both endpoints already have the same representative, a cycle exists.
+- For an undirected adjacency list, process each edge only once.
