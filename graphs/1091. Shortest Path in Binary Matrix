@@ -1,0 +1,134 @@
+# 1091. Shortest Path in Binary Matrix
+
+- **LeetCode:** https://leetcode.com/problems/shortest-path-in-binary-matrix/
+- **Topic:** Graphs, BFS, Bidirectional BFS, Shortest Path
+- **Language:** Java
+- **Status:** Learning
+
+## 1. My Intuition
+
+We can solve this problem using BFS because every movement has the same cost.
+
+We can move in 8 directions: horizontally, vertically, and diagonally.
+
+Initially, I considered normal BFS from the top-left cell to the bottom-right cell.
+
+Then I explored Bidirectional BFS, which starts searching from both the source and destination simultaneously.
+
+## 2. My Approach
+
+1. Check whether the source or destination cell is blocked. If so, return -1.
+2. Maintain two queues:
+   - One starting from the top-left cell.
+   - Another starting from the bottom-right cell.
+3. Maintain two distance matrices to track distances from both ends.
+4. Expand the smaller queue to reduce the search space.
+5. Explore all 8 possible directions.
+6. If a neighboring cell has already been visited by the opposite BFS, both searches have met.
+7. Calculate the shortest path using the distances from both sides.
+8. If the searches cannot connect, return -1.
+
+## 3. Where I Got Stuck / My Mistake
+
+Initially, I thought the order of exploring the eight directions might affect the shortest path.
+
+I also needed to understand how both BFS searches identify their meeting point and calculate the final distance.
+
+## 4. What Clicked
+
+Bidirectional BFS reduces the search space by exploring from both ends.
+
+Instead of exploring the entire distance from one side, both searches move towards each other.
+
+The smaller frontier is expanded at each step.
+
+When the searches meet, the combined distances give the shortest path length.
+
+## 5. Final Submitted Code
+
+class Solution {
+    public int shortestPathBinaryMatrix(int[][] grid) {
+        int n = grid.length;
+
+        if (grid[0][0] == 1 || grid[n - 1][n - 1] == 1) {
+            return -1;
+        }
+
+        if (n == 1) {
+            return 1;
+        }
+
+        Queue<int[]> q1 = new LinkedList<>();
+        Queue<int[]> q2 = new LinkedList<>();
+
+        int[][] d1 = new int[n][n];
+        int[][] d2 = new int[n][n];
+
+        q1.offer(new int[]{0, 0});
+        q2.offer(new int[]{n - 1, n - 1});
+
+        d1[0][0] = 1;
+        d2[n - 1][n - 1] = 1;
+
+        int[] dr = {-1, 1, 0, 0, -1, -1, 1, 1};
+        int[] dc = {0, 0, -1, 1, -1, 1, -1, 1};
+
+        while (!q1.isEmpty() && !q2.isEmpty()) {
+            if (q1.size() > q2.size()) {
+                Queue<int[]> temp = q1;
+                q1 = q2;
+                q2 = temp;
+
+                int[][] t = d1;
+                d1 = d2;
+                d2 = t;
+            }
+
+            int size = q1.size();
+
+            for (int i = 0; i < size; i++) {
+                int[] curr = q1.poll();
+
+                int r = curr[0];
+                int c = curr[1];
+
+                for (int k = 0; k < 8; k++) {
+                    int nr = r + dr[k];
+                    int nc = c + dc[k];
+
+                    if (nr < 0 || nr >= n || nc < 0 || nc >= n ||
+                        grid[nr][nc] == 1 || d1[nr][nc] != 0) {
+                        continue;
+                    }
+
+                    if (d2[nr][nc] != 0) {
+                        return d1[r][c] + d2[nr][nc];
+                    }
+
+                    d1[nr][nc] = d1[r][c] + 1;
+                    q1.offer(new int[]{nr, nc});
+                }
+            }
+        }
+
+        return -1;
+    }
+}
+
+## 6. Complexity Analysis
+
+Let N be the number of rows (and columns).
+
+- **Time Complexity:** O(N²)
+- **Space Complexity:** O(N²)
+
+Each cell is visited at most once by each BFS search.
+
+## 7. Revision Notes
+
+- Single-source BFS explores from one endpoint.
+- Bidirectional BFS explores from both endpoints.
+- Use two queues and two distance matrices.
+- Explore all eight directions.
+- Expand the smaller frontier.
+- Combine distances when both searches meet.
