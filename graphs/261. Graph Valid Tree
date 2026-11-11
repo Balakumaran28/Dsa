@@ -1,0 +1,169 @@
+# 261. Graph Valid Tree
+
+- **LeetCode:** https://leetcode.com/problems/graph-valid-tree/
+- **Topic:** Graph, DFS, Union-Find (DSU)
+- **Language:** Java
+- **Status:** Practiced
+
+## 1. My Intuition
+
+A graph is a valid tree if it is connected and contains no cycles.
+
+I initially thought of solving this using two approaches:
+
+1. DFS: Build an adjacency list and use a visited array to detect cycles.
+2. DSU: Check whether the two endpoints of an edge already belong to the same component. If they do, adding that edge creates a cycle.
+
+## 2. My Approach
+
+### Approach 1: DFS
+
+1. Build an undirected adjacency list.
+2. Check whether the number of edges is exactly n - 1.
+3. Start DFS from node 0.
+4. Pass the parent node to avoid treating the edge back to the parent as a cycle.
+5. If a visited neighbor is not the parent, a cycle exists.
+6. Finally, check whether all nodes were visited.
+
+### Approach 2: DSU
+
+1. Initialize every node as its own parent.
+2. Initialize the size of every component as 1.
+3. Check whether the number of edges is n - 1.
+4. For every edge, find the roots of both endpoints.
+5. If both roots are equal, a cycle exists.
+6. Otherwise, union the two components.
+7. If no cycle is detected, the graph is a valid tree.
+
+## 3. Where I Got Stuck / My Mistake
+
+Initially, I thought encountering an already visited node during DFS always meant a cycle.
+
+However, in an undirected graph, DFS also encounters the parent node because edges work in both directions.
+
+The correction is to pass the parent node and detect a cycle only when an already visited neighbor is not the parent.
+
+## 4. What Clicked
+
+A tree must satisfy two conditions:
+
+- It must be connected.
+- It must not contain cycles.
+
+A useful property is:
+
+A graph with n nodes is a tree if and only if it has exactly n - 1 edges and is acyclic.
+
+This allows us to check the edge count first and then focus on cycle detection.
+
+## 5. Final Submitted Code
+
+### DFS Approach
+
+    class Solution {
+        public boolean validTree(int n, int[][] edges) {
+            if (edges.length != n - 1) return false;
+
+            List<List<Integer>> adj = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                adj.add(new ArrayList<>());
+            }
+
+            for (int[] e : edges) {
+                adj.get(e[0]).add(e[1]);
+                adj.get(e[1]).add(e[0]);
+            }
+
+            boolean[] visited = new boolean[n];
+
+            if (dfs(0, -1, adj, visited)) return false;
+
+            for (boolean v : visited) {
+                if (!v) return false;
+            }
+
+            return true;
+        }
+
+        boolean dfs(int node, int parent, List<List<Integer>> adj, boolean[] visited) {
+            visited[node] = true;
+
+            for (int next : adj.get(node)) {
+                if (!visited[next]) {
+                    if (dfs(next, node, adj, visited)) return true;
+                } else if (next != parent) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+### DSU Approach
+
+    class Solution {
+        int[] parent, size;
+
+        int find(int x) {
+            if (parent[x] != x) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+
+        boolean union(int u, int v) {
+            int pu = find(u);
+            int pv = find(v);
+
+            if (pu == pv) return false;
+
+            if (size[pu] < size[pv]) {
+                parent[pu] = pv;
+                size[pv] += size[pu];
+            } else {
+                parent[pv] = pu;
+                size[pu] += size[pv];
+            }
+
+            return true;
+        }
+
+        public boolean validTree(int n, int[][] edges) {
+            if (edges.length != n - 1) return false;
+
+            parent = new int[n];
+            size = new int[n];
+
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+                size[i] = 1;
+            }
+
+            for (int[] e : edges) {
+                if (!union(e[0], e[1])) return false;
+            }
+
+            return true;
+        }
+    }
+
+## 6. Complexity Analysis
+
+### DFS
+
+- Time Complexity: O(V + E)
+- Space Complexity: O(V + E), including the adjacency list and visited array.
+
+### DSU
+
+- Time Complexity: O(V + E × α(V))
+- Space Complexity: O(V)
+
+## 7. Revision Notes
+
+- A valid tree must be connected and acyclic.
+- A tree with n nodes has exactly n - 1 edges.
+- In undirected DFS, always account for the parent node.
+- DSU detects cycles when both endpoints have the same root.
+- Remember path compression and union by size.
