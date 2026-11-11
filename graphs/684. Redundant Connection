@@ -1,0 +1,125 @@
+# 684. Redundant Connection
+
+- **LeetCode:** https://leetcode.com/problems/redundant-connection/
+- **Topic:** Graph, Disjoint Set Union (DSU)
+- **Language:** Java
+- **Status:** Practiced
+
+## 1. My Intuition
+
+The given graph was originally a tree, but one additional edge was added.
+
+That additional edge creates a cycle.
+
+Initially, I thought about using DFS, similar to the Graph Valid Tree problem, to detect the cycle and identify the redundant edge.
+
+However, I understood that we need to return the actual edge that creates the cycle, not simply the nodes involved in it.
+
+DSU provides a simpler approach.
+
+## 2. My Approach
+
+1. Initialize parent and size arrays for all nodes.
+2. Initially, every node belongs to its own component.
+3. Traverse the edges in the given input order.
+4. For every edge (u, v), find the roots of both endpoints.
+5. If both endpoints have the same root, they are already connected.
+6. Adding this edge creates a cycle, so return the current edge.
+7. Otherwise, union the two components.
+8. Continue until the redundant edge is found.
+
+## 3. Where I Got Stuck / My Mistake
+
+Initially, I considered using DFS to identify the cycle and return the corresponding nodes.
+
+The important realization was that the problem asks for the actual redundant edge.
+
+Returning two nodes involved in a cycle is not sufficient. We must return the original edge from the input.
+
+DSU makes this straightforward because we process edges in input order and identify the edge that connects two already-connected nodes.
+
+## 4. What Clicked
+
+The most important DSU condition:
+
+    if (find(u) == find(v)) {
+        // Cycle detected
+    }
+
+If both nodes have the same root, they already belong to the same connected component.
+
+Connecting them again creates a cycle.
+
+For this problem, we return the current edge immediately because the graph contains exactly one extra edge added to an original tree.
+
+## 5. Final Submitted Code
+
+    class Solution {
+        int[] parent;
+        int[] size;
+
+        int find(int x) {
+            if (parent[x] != x) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+
+        boolean union(int u, int v) {
+            int pu = find(u);
+            int pv = find(v);
+
+            if (pu == pv) {
+                return false;
+            }
+
+            if (size[pu] < size[pv]) {
+                parent[pu] = pv;
+                size[pv] += size[pu];
+            } else {
+                parent[pv] = pu;
+                size[pu] += size[pv];
+            }
+
+            return true;
+        }
+
+        public int[] findRedundantConnection(int[][] edges) {
+            int n = edges.length;
+
+            parent = new int[n + 1];
+            size = new int[n + 1];
+
+            for (int i = 1; i <= n; i++) {
+                parent[i] = i;
+                size[i] = 1;
+            }
+
+            for (int[] e : edges) {
+                if (!union(e[0], e[1])) {
+                    return e;
+                }
+            }
+
+            return new int[0];
+        }
+    }
+
+## 6. Complexity Analysis
+
+Let N be the number of nodes.
+
+- Time Complexity: O(N × α(N))
+- Space Complexity: O(N)
+
+Each edge requires a nearly constant-time DSU operation.
+
+## 7. Revision Notes
+
+- DSU is useful for detecting cycles in undirected graphs.
+- Find returns the representative/root of a component.
+- Union connects two different components.
+- If both endpoints have the same root, a cycle is detected.
+- Path compression makes find operations faster.
+- Union by size keeps the DSU tree balanced.
+- Process edges in input order to identify the redundant edge.
