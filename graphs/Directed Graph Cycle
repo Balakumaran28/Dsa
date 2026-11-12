@@ -1,0 +1,95 @@
+# Directed Graph Cycle
+
+- **Platform:** GeeksforGeeks
+- **Problem:** Detect Cycle in a Directed Graph
+- **Topic:** Graph, DFS, Directed Graph Cycle Detection
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+A directed graph contains a cycle if we can reach a node that is already present in the current DFS traversal path.
+
+I understood that simply checking whether a node was visited is not sufficient.
+
+We need to identify whether the visited node is currently being explored or whether its processing has already been completed.
+
+## 2. My Approach
+
+1. Create a visited array with three states.
+2. Traverse every node in the graph.
+3. If a node is not visited, start DFS.
+4. Mark the current node as 1 when entering DFS.
+5. Explore all adjacent nodes.
+6. If an adjacent node has state 1, a cycle exists.
+7. If an adjacent node has state 0, recursively explore it.
+8. After exploring all adjacent nodes, mark the current node as 2.
+9. If no cycle is found, return false.
+
+## 3. Where I Got Stuck / My Mistake
+
+Initially, distinguishing between an already visited node and a node currently in the DFS path was confusing.
+
+The solution is to maintain three states instead of using only a boolean visited array.
+
+## 4. What Clicked
+
+Three-state DFS:
+
+- 0: Not visited.
+- 1: Currently visiting.
+- 2: Completely processed.
+
+A cycle is detected when DFS reaches a node with state 1.
+
+A node with state 2 does not indicate a cycle because its DFS exploration has already been completed.
+
+## 5. Final Submitted Code
+
+    class Solution {
+        public boolean isCyclic(int V, ArrayList<ArrayList<Integer>> adj) {
+            int[] vis = new int[V];
+
+            for (int i = 0; i < V; i++) {
+                if (vis[i] == 0) {
+                    if (dfs(adj, i, vis)) return true;
+                }
+            }
+
+            return false;
+        }
+
+        public boolean dfs(ArrayList<ArrayList<Integer>> adj, int node, int[] vis) {
+            vis[node] = 1;
+
+            for (int curr : adj.get(node)) {
+                if (vis[curr] == 1) return true;
+
+                if (vis[curr] == 0) {
+                    if (dfs(adj, curr, vis)) return true;
+                }
+            }
+
+            vis[node] = 2;
+            return false;
+        }
+    }
+
+## 6. Complexity Analysis
+
+Let V be the number of vertices and E be the number of edges.
+
+- Time Complexity: O(V + E)
+- Auxiliary Space Complexity: O(V)
+
+The visited array and recursion stack require O(V) auxiliary space.
+
+## 7. Revision Notes
+
+- Directed graph cycle detection using DFS.
+- Use three states to track node processing.
+- State 1 represents the current DFS path.
+- State 2 represents completed DFS processing.
+- Reaching a state 1 node means a cycle exists.
+- Explore all disconnected components.
+- Time complexity is O(V + E).
