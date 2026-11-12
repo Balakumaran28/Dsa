@@ -1,0 +1,121 @@
+# 207. Course Schedule
+
+- **LeetCode:** https://leetcode.com/problems/course-schedule/
+- **Topic:** Graph, DFS, Directed Graph Cycle Detection
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+We are given the number of courses and their prerequisite relationships.
+
+To complete all courses, there must not be any cycle in the prerequisite graph.
+
+If a cycle exists, we cannot complete the courses involved in that cycle.
+
+My idea was to represent the prerequisites using an adjacency list and use DFS to detect a cycle in the directed graph.
+
+## 2. My Approach
+
+1. Create an adjacency list for all courses.
+2. For every prerequisite pair, add a directed edge from the prerequisite course to the dependent course.
+3. Create a visited array with three possible states.
+4. Traverse every unvisited node using DFS.
+5. During DFS:
+   - Mark the current node as 1 (currently visiting).
+   - Explore all adjacent nodes.
+   - If an adjacent node is already in state 1, a cycle exists.
+   - If an adjacent node is in state 0, recursively perform DFS.
+   - After processing all adjacent nodes, mark the current node as 2 (completely processed).
+6. If a cycle is detected, return false.
+7. Otherwise, return true.
+
+## 3. Where I Got Stuck / My Mistake
+
+The important part was understanding why a normal visited array is insufficient for directed graph cycle detection.
+
+We need three states to distinguish between:
+- Nodes that have not been visited.
+- Nodes currently in the DFS recursion path.
+- Nodes whose DFS processing is complete.
+
+## 4. What Clicked
+
+The three states:
+
+- 0: Not visited.
+- 1: Currently visiting.
+- 2: Completely processed.
+
+The most important condition:
+
+    if (vis[curr] == 1) return true;
+
+If DFS reaches a node that is already in the current recursion path, a directed cycle exists.
+
+Once a node is completely processed, we mark it as 2 so that we do not unnecessarily process it again.
+
+## 5. Final Submitted Code
+
+    class Solution {
+        public boolean canFinish(int numCourses, int[][] prerequisites) {
+            ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+
+            for (int i = 0; i < numCourses; i++) {
+                adj.add(new ArrayList<>());
+            }
+
+            for (int i = 0; i < prerequisites.length; i++) {
+                adj.get(prerequisites[i][1]).add(prerequisites[i][0]);
+            }
+
+            return !isCyclic(adj);
+        }
+
+        public static boolean isCyclic(ArrayList<ArrayList<Integer>> adj) {
+            int n = adj.size();
+            int[] vis = new int[n];
+
+            for (int i = 0; i < n; i++) {
+                if (vis[i] == 0) {
+                    if (dfs(adj, i, vis)) return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static boolean dfs(ArrayList<ArrayList<Integer>> adj, int node, int[] vis) {
+            vis[node] = 1;
+
+            for (int curr : adj.get(node)) {
+                if (vis[curr] == 1) return true;
+
+                if (vis[curr] == 0) {
+                    if (dfs(adj, curr, vis)) return true;
+                }
+            }
+
+            vis[node] = 2;
+            return false;
+        }
+    }
+
+## 6. Complexity Analysis
+
+Let V be the number of courses and E be the number of prerequisite relationships.
+
+- Time Complexity: O(V + E)
+- Space Complexity: O(V + E)
+
+The adjacency list requires O(V + E) space, and the visited array and recursion stack require O(V) space.
+
+## 7. Revision Notes
+
+- Course Schedule is a directed graph cycle detection problem.
+- Represent prerequisites using an adjacency list.
+- Use three states instead of a normal boolean visited array.
+- State 1 indicates a node currently in the DFS path.
+- Encountering state 1 means a cycle exists.
+- State 2 indicates that processing is complete.
+- No cycle means all courses can be completed.
