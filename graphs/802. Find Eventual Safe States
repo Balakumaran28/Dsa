@@ -1,0 +1,96 @@
+# 802. Find Eventual Safe States
+
+- **LeetCode:** https://leetcode.com/problems/find-eventual-safe-states/
+- **Topic:** Graph, DFS, Cycle Detection, Three-State DFS
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+We need to find the nodes that are not part of a cycle.
+
+Initially, I thought of maintaining an array containing 0 and 1. If a cycle is detected, we mark the corresponding nodes as 1. Finally, we collect the nodes that are still 0.
+
+However, an important observation is that nodes leading to a cycle are also unsafe, even if they are not directly part of the cycle.
+
+## 2. My Approach
+
+Use DFS with three states:
+
+- 0: Unvisited
+- 1: Visiting or unsafe
+- 2: Safe
+
+For every node:
+
+1. If it is already in state 1, a cycle is detected, so return false.
+2. If it is in state 2, it is already confirmed safe, so return true.
+3. Mark the current node as 1.
+4. Perform DFS on all its adjacent nodes.
+5. If any adjacent node is unsafe, the current node is also unsafe.
+6. If all adjacent nodes are safe, mark the current node as 2.
+
+Finally, collect all nodes marked as 2.
+
+## 3. Where I Got Stuck / My Mistake
+
+Initially, I considered marking only the nodes directly involved in a cycle.
+
+The important correction was that a node is also unsafe if it can reach a cycle.
+
+For example, if 0 -> 1 -> 2 -> 3 -> 2, nodes 0 and 1 are also unsafe.
+
+## 4. What Clicked
+
+The three-state DFS technique from Course Schedule (207) can also be used here.
+
+The difference is that we need to identify safe nodes instead of simply checking whether a cycle exists.
+
+## 5. Final Submitted Code
+
+Reference implementation:
+
+class Solution {
+    public List<Integer> eventualSafeNodes(int[][] graph) {
+        int n = graph.length;
+        int[] vis = new int[n];
+
+        List<Integer> ans = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            if (dfs(graph, i, vis)) {
+                ans.add(i);
+            }
+        }
+
+        return ans;
+    }
+
+    boolean dfs(int[][] graph, int node, int[] vis) {
+        if (vis[node] == 1) return false;
+        if (vis[node] == 2) return true;
+
+        vis[node] = 1;
+
+        for (int curr : graph[node]) {
+            if (!dfs(graph, curr, vis)) {
+                return false;
+            }
+        }
+
+        vis[node] = 2;
+        return true;
+    }
+}
+
+## 6. Complexity Analysis
+
+- Time Complexity: O(V + E)
+- Space Complexity: O(V), including the visited array and recursion stack.
+
+## 7. Revision Notes
+
+- A safe node is one from which every possible path eventually terminates.
+- Nodes that can reach a cycle are also unsafe.
+- Three-state DFS helps detect cycles and identify safe nodes.
+- Revisit the difference between visiting and fully processed nodes.
