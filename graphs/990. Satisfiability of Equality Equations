@@ -1,0 +1,142 @@
+# 990. Satisfiability of Equality Equations
+
+- **LeetCode:** https://leetcode.com/problems/satisfiability-of-equality-equations/
+- **Topic:** Graphs, Disjoint Set Union (DSU), Union-Find
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+We are given equations involving lowercase variables.
+
+There are two types of equations:
+
+- `a==b`: Both variables must be equal.
+- `a!=b`: Both variables must be different.
+
+My idea was to use Disjoint Set Union (DSU).
+
+If two variables are equal, they should belong to the same set.
+
+If two variables are unequal, they must belong to different sets.
+
+## 2. My Approach
+
+1. Initialize the `parent` and `size` arrays for all 26 lowercase English letters.
+2. First, traverse all equations.
+3. For every equality equation (`==`), perform a union operation.
+4. After processing all equality equations, traverse the equations again.
+5. For every inequality equation (`!=`):
+   - Find the representative of both variables.
+   - If both representatives are the same, return `false`.
+6. If no contradiction is found, return `true`.
+
+## 3. Where I Got Stuck / My Mistake
+
+The important part is processing equality equations before inequality equations.
+
+If we check inequality equations immediately, we might miss equality relationships that appear later in the input.
+
+Therefore, we need two separate traversals.
+
+## 4. What Clicked
+
+The key idea is to group all variables that must be equal.
+
+Example:
+
+    equations = ["a==b", "b==c", "a!=c"]
+
+After processing equality equations:
+
+    a, b, c belong to the same set.
+
+Now we check:
+
+    a != c
+
+Since both variables have the same representative, the equations are contradictory.
+
+Therefore, return `false`.
+
+## 5. Final Submitted Code
+
+    class Solution {
+
+        int[] parent = new int[26];
+        int[] size = new int[26];
+
+        int find(int x) {
+            if (parent[x] != x) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+
+        void union(int a, int b) {
+            int pa = find(a);
+            int pb = find(b);
+
+            if (pa == pb) return;
+
+            if (size[pa] < size[pb]) {
+                parent[pa] = pb;
+                size[pb] += size[pa];
+            } else {
+                parent[pb] = pa;
+                size[pa] += size[pb];
+            }
+        }
+
+        public boolean equationsPossible(String[] equations) {
+
+            for (int i = 0; i < 26; i++) {
+                parent[i] = i;
+                size[i] = 1;
+            }
+
+            for (String eq : equations) {
+                int a = eq.charAt(0) - 'a';
+                int b = eq.charAt(3) - 'a';
+
+                if (eq.charAt(1) == '=') {
+                    union(a, b);
+                }
+            }
+
+            for (String eq : equations) {
+                int a = eq.charAt(0) - 'a';
+                int b = eq.charAt(3) - 'a';
+
+                if (eq.charAt(1) == '!') {
+                    if (find(a) == find(b)) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+    }
+
+## 6. Complexity Analysis
+
+Let N be the number of equations.
+
+- **Initialization:** O(26)
+- **Time Complexity:** O(26 + N × α(26))
+- **Auxiliary Space:** O(26)
+
+Here, α represents the inverse Ackermann function.
+
+Since there are only 26 possible variables, the DSU operations are effectively constant time.
+
+## 7. Revision Notes
+
+- Disjoint Set Union (DSU).
+- Union by Size.
+- Path Compression.
+- Equality equations must be processed first.
+- Inequality equations are checked afterward.
+- If two unequal variables have the same representative, return false.
+- Two-pass approach using Union-Find.
