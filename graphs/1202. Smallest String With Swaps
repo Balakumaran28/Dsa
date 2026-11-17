@@ -1,0 +1,181 @@
+# 1202. Smallest String With Swaps
+
+- **LeetCode:** https://leetcode.com/problems/smallest-string-with-swaps/
+- **Topic:** Graphs, Disjoint Set Union (DSU), Union-Find, Sorting
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+Initially, I thought about performing all the allowed swaps and finding the smallest possible string.
+
+But trying every possible sequence of swaps would be inefficient.
+
+The important observation is that if two indices are connected through a chain of allowed swaps, their characters can be rearranged freely within that connected component.
+
+Therefore, instead of performing swaps, I can identify connected components and sort the characters within each component.
+
+DSU helps identify which indices belong to the same component.
+
+## 2. My Approach
+
+### Step 1: Build DSU
+
+- Initialize parent and size arrays.
+- For every pair `[a, b]`, perform `union(a, b)`.
+- This connects all indices that can exchange characters directly or indirectly.
+
+### Step 2: Group Characters
+
+- Create a HashMap where the key is the component representative.
+- Use a PriorityQueue to store characters belonging to each component.
+- For every index, find its root using `find(i)`.
+- Insert its character into the corresponding priority queue.
+
+The PriorityQueue automatically keeps the smallest character available at the top.
+
+### Step 3: Construct the Answer
+
+- Traverse the original string from left to right.
+- Find the component representative of each index.
+- Remove the smallest available character from that component's PriorityQueue.
+- Append it to the answer.
+
+Finally, return the constructed string.
+
+## 3. Where I Got Stuck / My Mistake
+
+Initially, I was thinking about performing swaps one by one.
+
+The important realization was that we don't need to simulate every swap.
+
+If multiple indices belong to the same connected component, their characters can be rearranged in any order.
+
+Another important point is that DSU only identifies connected components. It does not sort the characters.
+
+We need a separate data structure to maintain the characters in sorted order.
+
+## 4. What Clicked
+
+Consider:
+
+    s = "dcab"
+    pairs = [[0,3], [1,2], [0,2]]
+
+All four indices belong to the same connected component.
+
+Original characters:
+
+    d, c, a, b
+
+Sorted characters:
+
+    a, b, c, d
+
+Since all indices belong to the same component, we can rearrange these characters.
+
+Final answer:
+
+    abcd
+
+For disconnected components, characters can only be rearranged within their own component.
+
+This is why we group characters using the DSU representative.
+
+## 5. Final Submitted Code
+
+    class Solution {
+
+        int[] parent;
+        int[] size;
+
+        int find(int x) {
+            if (parent[x] != x) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+
+        void union(int a, int b) {
+            int pa = find(a);
+            int pb = find(b);
+
+            if (pa == pb) return;
+
+            if (size[pa] < size[pb]) {
+                parent[pa] = pb;
+                size[pb] += size[pa];
+            } else {
+                parent[pb] = pa;
+                size[pa] += size[pb];
+            }
+        }
+
+        public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {
+
+            int n = s.length();
+
+            parent = new int[n];
+            size = new int[n];
+
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+                size[i] = 1;
+            }
+
+            for (List<Integer> p : pairs) {
+                union(p.get(0), p.get(1));
+            }
+
+            Map<Integer, PriorityQueue<Character>> map = new HashMap<>();
+
+            for (int i = 0; i < n; i++) {
+                int root = find(i);
+
+                map.putIfAbsent(root, new PriorityQueue<>());
+                map.get(root).offer(s.charAt(i));
+            }
+
+            StringBuilder ans = new StringBuilder();
+
+            for (int i = 0; i < n; i++) {
+                int root = find(i);
+                ans.append(map.get(root).poll());
+            }
+
+            return ans.toString();
+        }
+    }
+
+## 6. Complexity Analysis
+
+Let:
+- N = Length of the string.
+- M = Number of swap pairs.
+
+- **DSU Initialization:** O(N)
+- **Union Operations:** O(M × α(N))
+- **Grouping Characters:** O(N log N)
+- **Constructing Answer:** O(N log N)
+
+**Overall Time Complexity:** O(N log N + M × α(N))
+
+**Space Complexity:** O(N)
+
+The DSU arrays, HashMap, PriorityQueues and StringBuilder require O(N) auxiliary space.
+
+## 7. Revision Notes
+
+- Disjoint Set Union (DSU).
+- Path Compression.
+- Union by Size.
+- Connected Components.
+- Group indices using their DSU representative.
+- HashMap to group characters.
+- PriorityQueue to retrieve the smallest character.
+- Sort characters independently within each component.
+- Construct the answer from left to right.
+
+**Key Learning:**
+
+DSU identifies which indices can exchange characters. Sorting within each connected component helps construct the lexicographically smallest string.
