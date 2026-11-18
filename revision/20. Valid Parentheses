@@ -1,0 +1,113 @@
+# 20. Valid Parentheses
+
+- **LeetCode:** https://leetcode.com/problems/valid-parentheses/
+- **Topic:** Stack, Strings
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+We need to check whether the given brackets are properly opened and closed.
+
+My idea was to use a Stack.
+
+Whenever I encounter an opening bracket, I push it into the stack.
+
+Whenever I encounter a closing bracket, I compare it with the most recently opened bracket.
+
+If they match, remove the opening bracket from the stack. Otherwise, the string is invalid.
+
+## 2. My Approach
+
+1. Create a Stack to store opening brackets.
+2. Traverse the string character by character.
+3. If the current character is an opening bracket `(`, `[` or `{`, push it into the stack.
+4. If it is a closing bracket:
+   - Check whether the stack is empty.
+   - If empty, return false.
+   - Otherwise, pop the top element.
+   - Check whether the opening and closing brackets match.
+5. If they don't match, return false.
+6. After traversing the entire string, check whether the stack is empty.
+7. If empty, return true. Otherwise, return false.
+
+## 3. Where I Got Stuck / My Mistake
+
+No major logical mistakes.
+
+The important condition is checking whether the stack is empty before popping.
+
+Also, checking the stack at the end is necessary because there might be unmatched opening brackets.
+
+## 4. What Clicked
+
+The key idea is LIFO (Last In, First Out).
+
+The most recently opened bracket must be the first one to close.
+
+Example:
+
+    s = "{[]}"
+
+    Push '{'
+    Push '['
+    Encounter ']' → Pop '['
+    Encounter '}' → Pop '{'
+
+    Stack = Empty
+
+    Output = true
+
+The Stack naturally handles the nested bracket structure.
+
+## 5. Final Submitted Code
+
+    class Solution {
+        public boolean isValid(String s) {
+            Stack<Character> st = new Stack<>();
+
+            for (int i = 0; i < s.length(); i++) {
+                if (s.charAt(i) == '(' || s.charAt(i) == '[' || s.charAt(i) == '{') {
+                    st.push(s.charAt(i));
+                } else {
+                    if (st.isEmpty()) return false;
+
+                    char ch = st.pop();
+
+                    if ((ch == '(' && s.charAt(i) == ')') ||
+                        (ch == '[' && s.charAt(i) == ']') ||
+                        (ch == '{' && s.charAt(i) == '}')) {
+                        continue;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+
+            return st.isEmpty();
+        }
+    }
+
+## 6. Complexity Analysis
+
+- **Time Complexity:** O(n)
+- **Space Complexity:** O(n)
+
+Each character is processed once.
+
+In the worst case, all characters may be opening brackets and stored in the stack.
+
+## 7. Revision Notes
+
+- Stack data structure.
+- LIFO (Last In, First Out).
+- Push opening brackets.
+- Pop when encountering closing brackets.
+- Match the correct bracket pairs.
+- Check for an empty stack before popping.
+- Check whether the stack is empty after traversal.
+- O(n) time and O(n) space.
+
+**Key Learning:**
+
+Stack is useful whenever the most recently opened element must be processed first, especially in nested structures.
