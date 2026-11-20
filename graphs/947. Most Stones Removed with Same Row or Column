@@ -1,0 +1,141 @@
+# 947. Most Stones Removed with Same Row or Column
+
+- **LeetCode:** https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/
+- **Topic:** Graph, Disjoint Set Union (DSU), Connected Components
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+Two stones are connected if they share the same row or column.
+
+A stone can be removed if another stone exists in the same row or column.
+
+We can continue removing stones from a connected group until only one stone remains.
+
+Therefore:
+
+**Maximum stones removable = Total stones - Number of connected components.**
+
+Instead of directly connecting stones, we can represent rows and columns as separate nodes in DSU.
+
+For every stone `[row, col]`, connect its row node with its column node.
+
+To distinguish row nodes from column nodes, use an offset:
+
+- Row ID = `row`
+- Column ID = `col + 10001`
+
+This allows us to use a single DSU array.
+
+## 2. My Approach
+
+1. Initialize the DSU with 20002 elements.
+2. Initialize each element as its own parent.
+3. For every stone:
+   - Get its row and column.
+   - Add an offset of 10001 to the column.
+   - Union the row and column nodes.
+4. After processing all stones, find the representative of each stone's row node.
+5. Store unique representatives in a HashSet.
+6. The number of unique representatives gives the number of connected components containing stones.
+7. Return:
+
+   `stones.length - components.size()`
+
+## 3. Where I Got Stuck / My Mistake
+
+Initially, I thought we needed separate parent arrays for rows and columns.
+
+The important realization was that rows and columns are two different types of entities, but they can be represented in a single DSU using an offset.
+
+Another important point is that we should count only the connected components containing actual stones, not all the unused row and column nodes.
+
+## 4. What Clicked
+
+The key observation is that we don't need to simulate removing stones one by one.
+
+If a connected component contains `k` stones, we can remove `k - 1` stones and leave one behind.
+
+Therefore, the answer is:
+
+`N - C`
+
+Where:
+- `N` = Total number of stones.
+- `C` = Number of connected components.
+
+DSU helps us efficiently identify these connected components.
+
+## 5. Final Submitted Code
+
+    class Solution {
+
+        int[] parent;
+        int[] size;
+
+        int find(int x) {
+            if (parent[x] != x) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+
+        void union(int a, int b) {
+            int pa = find(a);
+            int pb = find(b);
+
+            if (pa == pb) return;
+
+            if (size[pa] < size[pb]) {
+                parent[pa] = pb;
+                size[pb] += size[pa];
+            } else {
+                parent[pb] = pa;
+                size[pa] += size[pb];
+            }
+        }
+
+        public int removeStones(int[][] stones) {
+
+            parent = new int[20002];
+            size = new int[20002];
+
+            for (int i = 0; i < 20002; i++) {
+                parent[i] = i;
+                size[i] = 1;
+            }
+
+            for (int[] stone : stones) {
+                int row = stone[0];
+                int col = stone[1] + 10001;
+
+                union(row, col);
+            }
+
+            Set<Integer> components = new HashSet<>();
+
+            for (int[] stone : stones) {
+                components.add(find(stone[0]));
+            }
+
+            return stones.length - components.size();
+        }
+    }
+
+## 6. Complexity Analysis
+
+Let N be the number of stones.
+
+- **Time Complexity:** O(20002 + N × α(20002)), effectively O(N) because the coordinate range is fixed.
+- **Space Complexity:** O(20002), for the parent and size arrays, plus O(N) for the HashSet in the worst case.
+
+## 7. Revision Notes
+
+- Stones sharing a row or column belong to the same connected component.
+- Represent rows and columns as separate DSU nodes.
+- Use an offset to distinguish column IDs from row IDs.
+- Use union by size and path compression.
+- Count only components containing actual stones.
+- A component with K stones allows K - 1 removals.
+- **Final formula: Total stones - Connected components.**
