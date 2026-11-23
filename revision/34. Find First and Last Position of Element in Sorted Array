@@ -1,0 +1,142 @@
+# 34. Find First and Last Position of Element in Sorted Array
+
+- **LeetCode:** https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+- **Topic:** Binary Search, Arrays
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+Since the given array is sorted, we can use Binary Search to find the target efficiently.
+
+However, a normal binary search may return any occurrence of the target if duplicates exist.
+
+We need to find two positions:
+- First occurrence of the target.
+- Last occurrence of the target.
+
+Instead of stopping when we find the target, we continue searching in the required direction.
+
+## 2. My Approach
+
+I used two separate Binary Search functions.
+
+### Find First Occurrence
+
+1. Initialize `left = 0`, `right = nums.length - 1`, and `ans = -1`.
+2. Calculate the middle index.
+3. If `nums[mid] == target`:
+   - Store `mid` in `ans`.
+   - Move `right` to `mid - 1` to search for an earlier occurrence.
+4. If `nums[mid] < target`, search the right half.
+5. Otherwise, search the left half.
+6. Return `ans`.
+
+### Find Last Occurrence
+
+1. Initialize `left = 0`, `right = nums.length - 1`, and `ans = -1`.
+2. Calculate the middle index.
+3. If `nums[mid] == target`:
+   - Store `mid` in `ans`.
+   - Move `left` to `mid + 1` to search for a later occurrence.
+4. If `nums[mid] < target`, search the right half.
+5. Otherwise, search the left half.
+6. Return `ans`.
+
+Finally, return both positions in an array.
+
+If the target does not exist, both functions return `-1`.
+
+## 3. Where I Got Stuck / My Mistake
+
+The important distinction is what happens after finding the target.
+
+- For the first occurrence, move left: `right = mid - 1`.
+- For the last occurrence, move right: `left = mid + 1`.
+
+We should not stop immediately after finding the target because duplicates may exist on either side.
+
+## 4. What Clicked
+
+The key realization is that both problems use the same Binary Search structure.
+
+Only the direction of the search changes after finding the target.
+
+Example:
+
+`nums = [5, 7, 7, 8, 8, 10]`
+
+`target = 8`
+
+- First occurrence = index `3`
+- Last occurrence = index `4`
+
+Output:
+
+`[3, 4]`
+
+If the target is absent, the output is `[-1, -1]`.
+
+## 5. Final Submitted Code
+
+    class Solution {
+        public int[] searchRange(int[] nums, int target) {
+            return new int[]{findFirst(nums, target), findLast(nums, target)};
+        }
+
+        private int findFirst(int[] nums, int target) {
+            int left = 0, right = nums.length - 1;
+            int ans = -1;
+
+            while (left <= right) {
+                int mid = left + (right - left) / 2;
+
+                if (nums[mid] == target) {
+                    ans = mid;
+                    right = mid - 1;
+                } else if (nums[mid] < target) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+
+            return ans;
+        }
+
+        private int findLast(int[] nums, int target) {
+            int left = 0, right = nums.length - 1;
+            int ans = -1;
+
+            while (left <= right) {
+                int mid = left + (right - left) / 2;
+
+                if (nums[mid] == target) {
+                    ans = mid;
+                    left = mid + 1;
+                } else if (nums[mid] < target) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+
+            return ans;
+        }
+    }
+
+## 6. Complexity Analysis
+
+Let N be the length of the array.
+
+- **Time Complexity:** O(log N) + O(log N) = O(log N), because we perform two independent binary searches.
+- **Space Complexity:** O(1), because we use only a constant amount of extra space.
+
+## 7. Revision Notes
+
+- Use Binary Search because the array is sorted.
+- First occurrence: when target is found, save the index and continue searching left.
+- Last occurrence: when target is found, save the index and continue searching right.
+- Initialize the answer as `-1` to handle missing targets.
+- Calculate mid using `left + (right - left) / 2`.
+- **Important:** Finding the target does not mean the search is complete when duplicates exist.
