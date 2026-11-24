@@ -1,0 +1,136 @@
+# 36. Valid Sudoku
+
+- **LeetCode:** https://leetcode.com/problems/valid-sudoku/
+- **Topic:** Arrays, Matrix, Hashing, Simulation
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+We need to check whether a partially filled 9 × 9 Sudoku board is valid.
+
+A Sudoku board is valid if:
+1. Every row contains no duplicate digits from 1 to 9.
+2. Every column contains no duplicate digits from 1 to 9.
+3. Every 3 × 3 sub-box contains no duplicate digits from 1 to 9.
+
+Empty cells represented by `'.'` should be ignored.
+
+My idea is to visit every cell. If it contains a digit, check whether the same digit appears anywhere else in its row, column, or 3 × 3 box.
+
+If a duplicate is found, return `false`. Otherwise, after checking the entire board, return `true`.
+
+## 2. My Approach
+
+I used nested loops to traverse the entire board.
+
+For every cell:
+
+1. Store the current character in `temp`.
+2. If it is `'.'`, skip that cell.
+3. Check the entire row:
+   - Keep the row index fixed.
+   - Traverse all columns.
+   - If the same digit appears at another position, return `false`.
+4. Check the entire column:
+   - Keep the column index fixed.
+   - Traverse all rows.
+   - If the same digit appears at another position, return `false`.
+5. Check the corresponding 3 × 3 box:
+   - Calculate the starting row using `i - (i % 3)`.
+   - Calculate the starting column using `j - (j % 3)`.
+   - Traverse all nine cells in that box.
+   - Skip the current cell.
+   - If a duplicate is found, return `false`.
+
+If all checks pass, return `true`.
+
+## 3. Where I Got Stuck / My Mistake
+
+The important part was identifying the starting position of the 3 × 3 box containing the current cell.
+
+The formula is:
+
+- `row = i - (i % 3)`
+- `col = j - (j % 3)`
+
+For example, if the current cell is at `(4, 7)`:
+
+- Starting row = `4 - (4 % 3) = 3`
+- Starting column = `7 - (7 % 3) = 6`
+
+Therefore, the corresponding box starts at `(3, 6)` and covers rows 3–5 and columns 6–8.
+
+## 4. What Clicked
+
+The key realization is that every filled cell must satisfy three independent conditions:
+
+- No duplicate in its row.
+- No duplicate in its column.
+- No duplicate in its 3 × 3 box.
+
+We don't need to solve the Sudoku puzzle or fill empty cells. We only need to validate the existing board.
+
+## 5. Final Submitted Code
+
+    class Solution {
+        public boolean isValidSudoku(char[][] board) {
+            int n = board.length;
+
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    char temp = board[i][j];
+
+                    if (temp == '.') continue;
+
+                    for (int i1 = 0; i1 < n; i1++) {
+                        if (i1 != j) {
+                            if (board[i][i1] == temp) return false;
+                        }
+                    }
+
+                    for (int j1 = 0; j1 < n; j1++) {
+                        if (j1 != i) {
+                            if (board[j1][j] == temp) return false;
+                        }
+                    }
+
+                    int row = i - (i % 3);
+                    int col = j - (j % 3);
+
+                    for (int i2 = row; i2 < row + 3; i2++) {
+                        for (int j2 = col; j2 < col + 3; j2++) {
+
+                            if (i2 == i && j2 == j)
+                                continue;
+
+                            if (board[i2][j2] == temp)
+                                return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+    }
+
+## 6. Complexity Analysis
+
+Let N be the board dimension (9).
+
+- **Time Complexity:** O(N² × N) = O(N³), because we visit every cell and perform row, column, and box checks.
+- **Space Complexity:** O(1), because we use only a constant amount of extra space.
+
+Since the Sudoku board is always 9 × 9, the total number of operations is bounded by a constant.
+
+## 7. Revision Notes
+
+- Traverse every cell using nested loops.
+- Ignore empty cells represented by `'.'`.
+- Check the current digit against its entire row.
+- Check the current digit against its entire column.
+- Use `i - (i % 3)` and `j - (j % 3)` to find the starting position of its 3 × 3 box.
+- Skip the current cell while checking for duplicates.
+- Return `false` immediately when a duplicate is found.
+- **Important:** We only validate the existing Sudoku board; we do not need to solve it.
