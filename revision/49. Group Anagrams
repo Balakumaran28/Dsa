@@ -1,0 +1,76 @@
+# 49. Group Anagrams
+
+- **LeetCode:** https://leetcode.com/problems/group-anagrams/
+- **Topic:** Arrays, Strings, HashMap, Sorting
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+We need to group strings that are anagrams of each other.
+
+Two strings are anagrams if they contain exactly the same characters with the same frequencies, but their order can be different.
+
+For example:
+
+- `"eat"` and `"tea"` are anagrams.
+- `"tan"` and `"nat"` are anagrams.
+- `"bat"` has no matching anagram in this example.
+
+My idea is to sort the characters of every word.
+
+If two words are anagrams, their sorted character sequences will be identical.
+
+Therefore, we can use the sorted word as a common key to group anagrams.
+
+## 2. My Approach
+
+I used a HashMap where:
+
+- **Key:** Sorted version of the word.
+- **Value:** List of original words having that sorted key.
+
+### Steps
+
+1. Create a HashMap of type `String` and `List<String>`.
+2. Traverse every word in the input array.
+3. Convert the current word into a character array using `toCharArray()`.
+4. Sort the character array using `Arrays.sort()`.
+5. Convert the sorted character array back into a String. This becomes the key.
+6. Check whether the key already exists in the HashMap:
+   - If not, create a new ArrayList for that key.
+7. Add the original word to the corresponding list.
+8. After processing all words, return all grouped lists using `map.values()`.
+
+## 3. Where I Got Stuck / My Mistake
+
+The important realization is that we should not use the original word as the HashMap key.
+
+For example:
+
+- `"eat"` produces `"aet"`.
+- `"tea"` produces `"aet"`.
+- `"ate"` produces `"aet"`.
+
+All three words produce the same sorted key, so they belong to the same group.
+
+We also need to store the original words in the HashMap, not their sorted versions.
+
+## 4. What Clicked
+
+The key realization is that sorting converts all anagrams into an identical representation.
+
+Example:
+
+```text
+Input:
+["eat", "tea", "tan", "ate", "nat", "bat"]
+
+Sorted keys:
+
+eat -> aet
+tea -> aet
+tan -> ant
+ate -> aet
+nat -> ant
+bat -> abt
