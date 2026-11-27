@@ -1,0 +1,75 @@
+# 26. Remove Duplicates from Sorted Array
+
+- **LeetCode:** https://leetcode.com/problems/remove-duplicates-from-sorted-array/
+- **Topic:** Arrays, Two Pointers
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+The given array is sorted, so duplicate elements will always appear next to each other.
+
+My idea is to use two pointers:
+
+- `s` points to the position of the last unique element.
+- `f` scans the array to find the next unique element.
+
+Whenever `nums[f]` is different from `nums[s]`, we have found a new unique element.
+
+We move `s` forward and place the new unique element at that position.
+
+## 2. My Approach
+
+1. Initialize `s = 0`, pointing to the first element.
+2. Start the `f` pointer from index 1.
+3. Traverse the array using `f`.
+4. Compare `nums[f]` with `nums[s]`:
+   - If both are equal, it is a duplicate. Skip it.
+   - If they are different:
+     - Increment `s`.
+     - Copy `nums[f]` into `nums[s]`.
+5. After traversing the array, return `s + 1` because the index starts from zero.
+
+The first `s + 1` positions contain all unique elements in sorted order.
+
+## 3. Where I Got Stuck / My Mistake
+
+The important part is understanding why we compare `nums[f]` with `nums[s]` instead of comparing adjacent elements.
+
+- `f` scans every element.
+- `s` tracks the position of the last unique element.
+
+This ensures that every newly discovered unique element is placed immediately after the previous unique element.
+
+## 4. What Clicked
+
+The key realization is that we don't need another array or an additional data structure.
+
+We can overwrite duplicate positions in the original array.
+
+Example:
+
+```text
+Input:
+nums = [1, 1, 2, 2, 3]
+
+Initially:
+s = 0
+
+f = 1 -> nums[1] == nums[0] -> Skip
+
+f = 2 -> nums[2] != nums[0]
+         s = 1
+         nums[1] = 2
+
+f = 3 -> nums[3] == nums[1] -> Skip
+
+f = 4 -> nums[4] != nums[1]
+         s = 2
+         nums[2] = 3
+
+Final array:
+[1, 2, 3, 2, 3]
+
+Returned length:
+s + 1 = 3
