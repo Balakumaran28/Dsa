@@ -1,0 +1,157 @@
+# 2115. Find All Possible Recipes from Given Supplies
+
+- **LeetCode:** https://leetcode.com/problems/find-all-possible-recipes-from-given-supplies/
+- **Topic:** Graph, Topological Sort, BFS, Kahn's Algorithm, HashMap
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+We are given recipes, their required ingredients, and initially available supplies.
+
+A recipe can be created only when all its required ingredients are available.
+
+One recipe can also become an ingredient for another recipe.
+
+This is a dependency problem, so we can solve it using Topological Sort.
+
+My idea is to represent each ingredient as a node and connect it to the recipe that depends on it.
+
+If an ingredient becomes available, we can reduce the indegree of the recipes depending on it.
+
+When a recipe's indegree becomes zero, all its required ingredients are available, so we can create that recipe.
+
+## 2. My Approach
+
+1. Create a HashMap adjacency list:
+   - Key = Ingredient.
+   - Value = List of recipes that require that ingredient.
+
+2. Create another HashMap for indegree:
+   - Key = Recipe.
+   - Value = Number of required ingredients.
+
+3. Initialize the indegree of every recipe to zero.
+
+4. Traverse all recipes and their ingredients:
+   - Create an edge from each ingredient to its dependent recipe.
+   - Increase the recipe's indegree by one for every ingredient.
+
+5. Add all initially available supplies to the queue.
+
+6. Process the queue:
+   - Remove an available ingredient.
+   - Find all recipes depending on it.
+   - Decrease their indegree by one.
+   - If a recipe's indegree becomes zero:
+     - Add it to the answer.
+     - Add it to the queue because it can now be used as an ingredient for other recipes.
+
+7. Return the list of recipes that can be created.
+
+## 3. Where I Got Stuck / My Mistake
+
+Initially, I considered calculating indegree only for ingredients that were present in the recipes array.
+
+The important correction was to count every required ingredient, including basic ingredients such as flour, yeast, and meat.
+
+We should also construct the graph in the correct direction:
+
+`Ingredient → Recipe`
+
+This allows us to process initially available supplies and newly created recipes using the same queue.
+
+## 4. What Clicked
+
+The key realization is that supplies and newly created recipes are both available ingredients.
+
+We don't need separate processing logic for them.
+
+Whenever an item becomes available:
+
+1. Process its outgoing edges.
+2. Decrease the indegree of dependent recipes.
+3. If indegree becomes zero, create that recipe and add it to the queue.
+
+This is Kahn's Algorithm applied to recipe dependencies.
+
+## 5. Final Submitted Code
+
+    class Solution {
+        public List<String> findAllRecipes(
+            String[] recipes,
+            List<List<String>> ingredients,
+            String[] supplies
+        ) {
+
+            HashMap<String, ArrayList<String>> edges = new HashMap<>();
+            HashMap<String, Integer> indegree = new HashMap<>();
+
+            for (String recipe : recipes) {
+                indegree.put(recipe, 0);
+            }
+
+            for (int i = 0; i < recipes.length; i++) {
+
+                String recipe = recipes[i];
+
+                for (String in : ingredients.get(i)) {
+
+                    edges.putIfAbsent(in, new ArrayList<>());
+
+                    edges.get(in).add(recipe);
+
+                    indegree.put(recipe, indegree.get(recipe) + 1);
+                }
+            }
+
+            Queue<String> q = new LinkedList<>();
+
+            for (String supply : supplies) {
+                q.offer(supply);
+            }
+
+            List<String> ans = new ArrayList<>();
+
+            while (!q.isEmpty()) {
+
+                String item = q.poll();
+
+                for (String curr : edges.getOrDefault(item, new ArrayList<>())) {
+
+                    indegree.put(curr, indegree.get(curr) - 1);
+
+                    if (indegree.get(curr) == 0) {
+
+                        ans.add(curr);
+
+                        q.offer(curr);
+                    }
+                }
+            }
+
+            return ans;
+        }
+    }
+
+## 6. Complexity Analysis
+
+Let:
+- N = Number of recipes.
+- M = Total number of ingredient entries across all recipes.
+- S = Number of initially available supplies.
+
+- **Time Complexity:** O(N + M + S), because each recipe, ingredient dependency, and available item is processed a constant number of times.
+- **Space Complexity:** O(N + M + S), for the adjacency list, indegree HashMap, queue, and answer list.
+
+## 7. Revision Notes
+
+- This problem uses Topological Sort with Kahn's Algorithm.
+- Use a HashMap adjacency list because ingredient names are strings.
+- Use another HashMap to maintain indegrees.
+- Graph direction: Ingredient → Recipe.
+- Count every required ingredient in the indegree.
+- Initially add all supplies to the queue.
+- When a recipe's indegree becomes zero, it can be created.
+- Add newly created recipes to the queue because they can be ingredients for other recipes.
+- **Important:** Treat initially available supplies and newly created recipes as available items in the same BFS process.
