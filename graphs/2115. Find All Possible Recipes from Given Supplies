@@ -51,7 +51,7 @@ When a recipe's indegree becomes zero, all its required ingredients are availabl
 
 ## 3. Where I Got Stuck / My Mistake
 
-Initially, I considered calculating indegree only for ingredients that were present in the recipes array.
+Initially, I considered calculating indegree only for ingredients that were present in the `recipes` array.
 
 The important correction was to count every required ingredient, including basic ingredients such as flour, yeast, and meat.
 
@@ -77,79 +77,81 @@ This is Kahn's Algorithm applied to recipe dependencies.
 
 ## 5. Final Submitted Code
 
-    class Solution {
-        public List<String> findAllRecipes(
-            String[] recipes,
-            List<List<String>> ingredients,
-            String[] supplies
-        ) {
+```java
+class Solution {
+    public List<String> findAllRecipes(
+        String[] recipes,
+        List<List<String>> ingredients,
+        String[] supplies
+    ) {
 
-            HashMap<String, ArrayList<String>> edges = new HashMap<>();
-            HashMap<String, Integer> indegree = new HashMap<>();
+        HashMap<String, ArrayList<String>> edges = new HashMap<>();
+        HashMap<String, Integer> indegree = new HashMap<>();
 
-            for (String recipe : recipes) {
-                indegree.put(recipe, 0);
-            }
-
-            for (int i = 0; i < recipes.length; i++) {
-
-                String recipe = recipes[i];
-
-                for (String in : ingredients.get(i)) {
-
-                    edges.putIfAbsent(in, new ArrayList<>());
-
-                    edges.get(in).add(recipe);
-
-                    indegree.put(recipe, indegree.get(recipe) + 1);
-                }
-            }
-
-            Queue<String> q = new LinkedList<>();
-
-            for (String supply : supplies) {
-                q.offer(supply);
-            }
-
-            List<String> ans = new ArrayList<>();
-
-            while (!q.isEmpty()) {
-
-                String item = q.poll();
-
-                for (String curr : edges.getOrDefault(item, new ArrayList<>())) {
-
-                    indegree.put(curr, indegree.get(curr) - 1);
-
-                    if (indegree.get(curr) == 0) {
-
-                        ans.add(curr);
-
-                        q.offer(curr);
-                    }
-                }
-            }
-
-            return ans;
+        for (String recipe : recipes) {
+            indegree.put(recipe, 0);
         }
+
+        for (int i = 0; i < recipes.length; i++) {
+
+            String recipe = recipes[i];
+
+            for (String in : ingredients.get(i)) {
+
+                edges.putIfAbsent(in, new ArrayList<>());
+
+                edges.get(in).add(recipe);
+
+                indegree.put(recipe, indegree.get(recipe) + 1);
+            }
+        }
+
+        Queue<String> q = new LinkedList<>();
+
+        for (String supply : supplies) {
+            q.offer(supply);
+        }
+
+        List<String> ans = new ArrayList<>();
+
+        while (!q.isEmpty()) {
+
+            String item = q.poll();
+
+            for (String curr : edges.getOrDefault(item, new ArrayList<>())) {
+
+                indegree.put(curr, indegree.get(curr) - 1);
+
+                if (indegree.get(curr) == 0) {
+
+                    ans.add(curr);
+
+                    q.offer(curr);
+                }
+            }
+        }
+
+        return ans;
     }
+}
+```
 
 ## 6. Complexity Analysis
 
 Let:
-- N = Number of recipes.
-- M = Total number of ingredient entries across all recipes.
-- S = Number of initially available supplies.
+- `N` = Number of recipes.
+- `M` = Total number of ingredient entries across all recipes.
+- `S` = Number of initially available supplies.
 
-- **Time Complexity:** O(N + M + S), because each recipe, ingredient dependency, and available item is processed a constant number of times.
-- **Space Complexity:** O(N + M + S), for the adjacency list, indegree HashMap, queue, and answer list.
+- **Time Complexity:** O(N + M + S)
+- **Space Complexity:** O(N + M + S)
 
 ## 7. Revision Notes
 
 - This problem uses Topological Sort with Kahn's Algorithm.
 - Use a HashMap adjacency list because ingredient names are strings.
 - Use another HashMap to maintain indegrees.
-- Graph direction: Ingredient → Recipe.
+- Graph direction: `Ingredient → Recipe`.
 - Count every required ingredient in the indegree.
 - Initially add all supplies to the queue.
 - When a recipe's indegree becomes zero, it can be created.
