@@ -15,7 +15,7 @@ If course `a` requires course `b`, we create a directed edge:
 
 `b → a`
 
-A course with indegree 0 has no remaining prerequisites, so it can be completed first.
+A course with indegree `0` has no remaining prerequisites, so it can be completed first.
 
 My idea is to use Kahn's Algorithm to generate a topological ordering.
 
@@ -24,12 +24,12 @@ My idea is to use Kahn's Algorithm to generate a topological ordering.
 1. Create an adjacency list to represent the directed graph.
 2. For every prerequisite pair `[a, b]`, add an edge from `b` to `a`.
 3. Calculate the indegree of every course.
-4. Add all courses with indegree 0 to a queue.
+4. Add all courses with indegree `0` to a queue.
 5. Process the queue:
    - Remove a course and add it to the answer array.
    - Traverse its neighbouring courses.
-   - Decrease their indegree by 1.
-   - If a neighbour's indegree becomes 0, add it to the queue.
+   - Decrease their indegree by `1`.
+   - If a neighbour's indegree becomes `0`, add it to the queue.
 6. Maintain an `index` to track how many courses have been processed.
 7. If `index != numCourses`, a cycle exists, so return an empty array.
 8. Otherwise, return the generated ordering.
@@ -58,64 +58,68 @@ Kahn's Algorithm naturally produces the required topological ordering.
 
 ## 5. Final Submitted Code
 
-    class Solution {
-        public int[] findOrder(int numCourses, int[][] prerequisites) {
-            ArrayList<ArrayList<Integer>> edges = new ArrayList<>();
+```java
+class Solution {
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        ArrayList<ArrayList<Integer>> edges = new ArrayList<>();
 
-            for (int i = 0; i < numCourses; i++) {
-                edges.add(new ArrayList<Integer>());
-            }
-
-            for (int i = 0; i < prerequisites.length; i++) {
-                edges.get(prerequisites[i][1]).add(prerequisites[i][0]);
-            }
-
-            int[] indegree = new int[numCourses];
-
-            for (ArrayList<Integer> edge : edges) {
-                for (int v : edge) {
-                    indegree[v]++;
-                }
-            }
-
-            Queue<Integer> q = new LinkedList<>();
-
-            for (int i = 0; i < numCourses; i++) {
-                if (indegree[i] == 0) {
-                    q.offer(i);
-                }
-            }
-
-            int[] ans = new int[numCourses];
-            int index = 0;
-
-            while (!q.isEmpty()) {
-                int node = q.poll();
-                ans[index++] = node;
-
-                for (int curr : edges.get(node)) {
-                    indegree[curr]--;
-
-                    if (indegree[curr] == 0) {
-                        q.offer(curr);
-                    }
-                }
-            }
-
-            if (index != numCourses) {
-                return new int[0];
-            }
-
-            return ans;
+        for (int i = 0; i < numCourses; i++) {
+            edges.add(new ArrayList<Integer>());
         }
+
+        for (int i = 0; i < prerequisites.length; i++) {
+            edges.get(prerequisites[i][1]).add(prerequisites[i][0]);
+        }
+
+        int[] indegree = new int[numCourses];
+
+        for (ArrayList<Integer> edge : edges) {
+            for (int v : edge) {
+                indegree[v]++;
+            }
+        }
+
+        Queue<Integer> q = new LinkedList<>();
+
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) {
+                q.offer(i);
+            }
+        }
+
+        int[] ans = new int[numCourses];
+        int index = 0;
+
+        while (!q.isEmpty()) {
+            int node = q.poll();
+            ans[index++] = node;
+
+            for (int curr : edges.get(node)) {
+                indegree[curr]--;
+
+                if (indegree[curr] == 0) {
+                    q.offer(curr);
+                }
+            }
+        }
+
+        if (index != numCourses) {
+            return new int[0];
+        }
+
+        return ans;
     }
+}
+```
 
 ## 6. Complexity Analysis
 
-Let V be the number of courses and E be the number of prerequisites.
+Let:
+- `V` = Number of courses.
+- `E` = Number of prerequisites.
 
-- **Time Complexity:** O(V + E), because we construct the graph, calculate indegrees, and process every vertex and edge once.
-- **Space Complexity:** O(V + E), for the adjacency list, indegree array, queue, and answer array.
+- **Time Complexity:** O(V + E)
+- **Space Complexity:** O(V + E)
 
 ## 7. Revision Notes
 
@@ -123,7 +127,7 @@ Let V be the number of courses and E be the number of prerequisites.
 - Use Kahn's Algorithm (BFS).
 - For prerequisite `[a, b]`, create edge `b → a`.
 - Indegree represents the number of remaining prerequisites.
-- Start with all vertices having indegree 0.
+- Start with all vertices having indegree `0`.
 - Reduce the indegree of neighbouring vertices after processing a node.
-- If processed vertices != total vertices, a cycle exists.
+- If processed vertices are fewer than total vertices, a cycle exists.
 - **Important:** Return an empty array if all courses cannot be completed.
