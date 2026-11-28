@@ -1,0 +1,129 @@
+# 210. Course Schedule II
+
+- **LeetCode:** https://leetcode.com/problems/course-schedule-ii/
+- **Topic:** Graph, Topological Sort, BFS, Kahn's Algorithm
+- **Language:** Java
+- **Status:** Solved
+
+## 1. My Intuition
+
+We are given courses and their prerequisites. We need to return a valid order in which all courses can be completed.
+
+This is a dependency problem that can be represented using a directed graph.
+
+If course `a` requires course `b`, we create a directed edge:
+
+`b → a`
+
+A course with indegree 0 has no remaining prerequisites, so it can be completed first.
+
+My idea is to use Kahn's Algorithm to generate a topological ordering.
+
+## 2. My Approach
+
+1. Create an adjacency list to represent the directed graph.
+2. For every prerequisite pair `[a, b]`, add an edge from `b` to `a`.
+3. Calculate the indegree of every course.
+4. Add all courses with indegree 0 to a queue.
+5. Process the queue:
+   - Remove a course and add it to the answer array.
+   - Traverse its neighbouring courses.
+   - Decrease their indegree by 1.
+   - If a neighbour's indegree becomes 0, add it to the queue.
+6. Maintain an `index` to track how many courses have been processed.
+7. If `index != numCourses`, a cycle exists, so return an empty array.
+8. Otherwise, return the generated ordering.
+
+## 3. Where I Got Stuck / My Mistake
+
+The important part is understanding the direction of the edge.
+
+For prerequisite `[a, b]`, course `b` must be completed before course `a`.
+
+Therefore, the edge must be:
+
+`b → a`
+
+Another important point is cycle detection. If all courses cannot be processed, the graph contains a cycle and no valid ordering exists.
+
+## 4. What Clicked
+
+The key realization is that indegree represents the number of prerequisites that are still remaining for a course.
+
+When a course is completed, we reduce the indegree of all courses depending on it.
+
+When indegree becomes zero, that course is ready to be completed.
+
+Kahn's Algorithm naturally produces the required topological ordering.
+
+## 5. Final Submitted Code
+
+    class Solution {
+        public int[] findOrder(int numCourses, int[][] prerequisites) {
+            ArrayList<ArrayList<Integer>> edges = new ArrayList<>();
+
+            for (int i = 0; i < numCourses; i++) {
+                edges.add(new ArrayList<Integer>());
+            }
+
+            for (int i = 0; i < prerequisites.length; i++) {
+                edges.get(prerequisites[i][1]).add(prerequisites[i][0]);
+            }
+
+            int[] indegree = new int[numCourses];
+
+            for (ArrayList<Integer> edge : edges) {
+                for (int v : edge) {
+                    indegree[v]++;
+                }
+            }
+
+            Queue<Integer> q = new LinkedList<>();
+
+            for (int i = 0; i < numCourses; i++) {
+                if (indegree[i] == 0) {
+                    q.offer(i);
+                }
+            }
+
+            int[] ans = new int[numCourses];
+            int index = 0;
+
+            while (!q.isEmpty()) {
+                int node = q.poll();
+                ans[index++] = node;
+
+                for (int curr : edges.get(node)) {
+                    indegree[curr]--;
+
+                    if (indegree[curr] == 0) {
+                        q.offer(curr);
+                    }
+                }
+            }
+
+            if (index != numCourses) {
+                return new int[0];
+            }
+
+            return ans;
+        }
+    }
+
+## 6. Complexity Analysis
+
+Let V be the number of courses and E be the number of prerequisites.
+
+- **Time Complexity:** O(V + E), because we construct the graph, calculate indegrees, and process every vertex and edge once.
+- **Space Complexity:** O(V + E), for the adjacency list, indegree array, queue, and answer array.
+
+## 7. Revision Notes
+
+- Course Schedule II is a Topological Sort problem.
+- Use Kahn's Algorithm (BFS).
+- For prerequisite `[a, b]`, create edge `b → a`.
+- Indegree represents the number of remaining prerequisites.
+- Start with all vertices having indegree 0.
+- Reduce the indegree of neighbouring vertices after processing a node.
+- If processed vertices != total vertices, a cycle exists.
+- **Important:** Return an empty array if all courses cannot be completed.
